@@ -98,13 +98,14 @@ impl ProjectConfig {
     }
 
     /// Guarda el proyecto. La ruta del Excel se guarda relativa al proyecto
-    /// si ambos están en la misma carpeta o en una subcarpeta.
+    /// (con `..` si hace falta) cuando ambos están en la misma unidad, así la
+    /// carpeta se puede mover o compartir entera.
     pub fn save(&self, path: &Path) -> anyhow::Result<()> {
         let mut config = self.clone();
         if let (Some(excel), Some(dir)) = (&self.excel_path, path.parent())
-            && let Ok(relative) = excel.strip_prefix(dir)
+            && let Some(relative) = relative_path(dir, excel)
         {
-            config.excel_path = Some(relative.to_path_buf());
+            config.excel_path = Some(relative);
         }
         std::fs::write(path, config.to_json()?)
             .with_context(|| format!("no se pudo escribir {}", path.display()))
@@ -136,9 +137,43 @@ impl ProjectConfig {
     }
 }
 
+/// Ruta de `target` vista desde la carpeta `base`. `None` si no comparten raíz
+/// (otra unidad en Windows) o si alguna no es absoluta.
+fn relative_path(base: &Path, target: &Path) -> Option<PathBuf> {
+    use std::path::Component;
+    if !base.is_absolute() || !target.is_absolute() {
+        return None;
+    }
+    let b: Vec<Component> = base.components().collect();
+    let t: Vec<Component> = target.components().collect();
+    // La raíz (unidad en Windows) debe coincidir.
+    if b.first() != t.first() {
+        return None;
+    }
+    let common = b.iter().zip(&t).take_while(|(x, y)| x == y).count();
+    let mut rel = PathBuf::new();
+    for _ in common..b.len() {
+        rel.push("..");
+    }
+    for c in &t[common..] {
+        rel.push(c.as_os_str());
+    }
+    Some(rel)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn relative_paths() {
+        let root = std::env::temp_dir();
+        let base = root.join("a").join("proyectos");
+        let target = root.join("a").join("datos").join("x.xlsx");
+        assert_eq!(relative_path(&base, &target), Some(PathBuf::from("..").join("datos").join("x.xlsx")));
+        assert_eq!(relative_path(&base, &base.join("x.xlsx")), Some(PathBuf::from("x.xlsx")));
+        assert_eq!(relative_path(Path::new("rel"), &target), None);
+    }
 
     #[test]
     fn rgb_hex_roundtrip() {

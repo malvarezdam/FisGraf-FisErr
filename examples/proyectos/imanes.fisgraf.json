@@ -1,0 +1,143 @@
+{
+  "format_version": 1,
+  "excel_path": "..\\datos\\ejemplo.xlsx",
+  "series": [
+    {
+      "id": 1,
+      "label": "Tracker",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "Imanes!A2:A5",
+      "y_range": "Imanes!B2:B5",
+      "x_error": {
+        "Constant": 0.05
+      },
+      "y_error": {
+        "Range": "Imanes!C2:C5"
+      },
+      "color": "#0072BD",
+      "marker": "Square",
+      "marker_size_pt": 1.8,
+      "connect_points": null,
+      "error_cap_pt": 2.0
+    }
+  ],
+  "fits": [],
+  "references": [
+    {
+      "id": 2,
+      "enabled": true,
+      "label": "Modelo $T_{\\mathrm{teo}}$",
+      "show_in_legend": true,
+      "expression": "0.969 + 0.0128*(x - 25.15)",
+      "variable": "x",
+      "constants": [],
+      "latex_override": "",
+      "domain": null,
+      "samples": 200,
+      "line": {
+        "color": "#D62728",
+        "width_pt": 1.2,
+        "dash": "Dashed",
+        "opacity": 1.0
+      }
+    },
+    {
+      "id": 3,
+      "enabled": true,
+      "label": "$0{,}987\\,T_{\\mathrm{teo}}$",
+      "show_in_legend": true,
+      "expression": "0.987*(0.969 + 0.0128*(x - 25.15))",
+      "variable": "x",
+      "constants": [],
+      "latex_override": "",
+      "domain": null,
+      "samples": 200,
+      "line": {
+        "color": "#7F7F7F",
+        "width_pt": 1.2,
+        "dash": "DenselyDotted",
+        "opacity": 1.0
+      }
+    }
+  ],
+  "x_axis": {
+    "label": "Posición del par de imanes $x$ [\\unit{cm}]",
+    "min": 25.15,
+    "max": 29.8,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": {
+        "Distance": 1.0
+      },
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 0,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "y_axis": {
+    "label": "Periodo $T$ [\\unit{s}]",
+    "min": 0.95,
+    "max": 1.02,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": {
+        "Distance": 0.01
+      },
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 2,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "figure": {
+    "title": "",
+    "width_cm": 9.0,
+    "aspect": "R4x3",
+    "font": "LatinModern",
+    "font_size_pt": 10.0,
+    "grid": {
+      "major": true,
+      "minor": false,
+      "color": "#7F7F7F",
+      "opacity": 0.3
+    },
+    "legend": {
+      "show": true,
+      "position": "SouthEast",
+      "columns": 1,
+      "frame": true,
+      "fill_opacity": 1.0
+    },
+    "results_box": {
+      "show": false,
+      "position": "SouthEast"
+    },
+    "residuals_panel": false,
+    "engine": "LuaLatex",
+    "extra_preamble": ""
+  },
+  "export": {
+    "output_dir": null,
+    "file_stem": "imanes",
+    "pdf": true,
+    "png": true,
+    "png_dpi": 300,
+    "svg": false,
+    "tex_standalone": true,
+    "tex_snippet": true
+  }
+}

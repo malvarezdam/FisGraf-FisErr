@@ -255,7 +255,25 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - `goodness_of_fit`: χ², χ²_red, p-valor (solo con pesos), SSR, s, R², R² ajustado, AIC, AICc y BIC.
   - `rounding::round_gum`: regla del PDG (100–354 → 2 cifras, 355–949 → 1, 950–999 → sube a 1000), o 1 o 2 cifras fijas. Usa notación científica si max(|v|, σ) ≥ 10⁴ o < 10⁻³. Formatos `plain()` y `latex()` con coma decimal.
   - **Validación NIST**: las σ certificadas de 20 problemas no lineales y 4 lineales se reproducen con 7,0 a 13,8 cifras correctas (`tests/nist.rs::certified_standard_deviations`).
-- [ ] Fase 5 — Render LaTeX
+- [x] Fase 5 — Render LaTeX
+  - **Nuevo módulo `pipeline`** (no estaba en el plan; es la pieza que usará la GUI):
+    - `compute(&project, Option<&Workbook>) -> Computed` lee las series, ajusta cada par (ajuste, serie) y estima incertidumbres y estadísticos. Los errores se guardan como `String` por elemento, así un ajuste que falla no tumba el gráfico.
+    - `build_scene(&project, &computed) -> Scene` muestrea curvas, bandas, residuos y arma el cuadro de resultados. `Scene.warnings` reúne los avisos en español.
+  - `render::generate(&project, &scene) -> TexDocument { full, picture, preamble, warnings }`. `render::export(&project, &scene, dir)` escribe PDF, PNG, SVG, `.tex` y `_tikz.tex` según `ExportConfig`.
+  - Decisiones:
+    - Los datos se escriben con `coordinates {(x,y) +- (ex,ey)}`, porque las tablas en línea `table[row sep=\\]` fallan dentro de `axis`.
+    - `unbounded coords=jump` corta las curvas en valores no finitos.
+    - Los estilos de las etiquetas de los ejes terminan en `/tikz/.cd`; si no, la etiqueta del factor ×10ⁿ falla.
+    - El rango x siempre es explícito: el manual, o el de los datos más un 5 %. Las referencias usan todo ese rango y los ajustes, el de su serie (o `domain`).
+    - La coma decimal global (siunitx, ecuaciones, cuadro de resultados) se toma de `y_axis.number_format.decimal_comma`.
+    - Los colores se definen dentro del `tikzpicture` (`fgRRGGBB`), así el fragmento funciona solo.
+    - El panel de residuos usa formato automático con factor común.
+    - Unidades de los parámetros con `\unit{}` de siunitx.
+  - Compilación: `-interaction=nonstopmode -halt-on-error -file-line-error`, sin ventana de consola, con límite de 180 s. El error devuelve la línea del `.tex`, el mensaje y el contexto del `.log`.
+  - Guardado: la ruta del Excel se guarda relativa con `..` cuando están en la misma unidad.
+  - Ejemplos: `cargo run --example generar_graficos_ejemplo` crea `examples/proyectos/{imanes,pendulo}.fisgraf.json` y exporta a `examples/salida/` (ignorada en git). `imanes` replica el gráfico de referencia; `pendulo` da g = 9,784 ± 0,022 m/s² con banda, cuadro y residuos.
+  - Verificado: las 7 fuentes compilan con LuaLaTeX y pdfLaTeX (`cargo test --test render -- --ignored`, unos 2 min).
+  - Para la Fase 8: `export::build_dir()` es una carpeta por proceso. La vista previa debe usar un nombre de archivo propio para no pisar una exportación en curso.
 - [ ] Fase 6 — GUI I
 - [ ] Fase 7 — GUI II
 - [ ] Fase 8 — Vista previa LaTeX y pulido
