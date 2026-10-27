@@ -233,7 +233,19 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - Las derivadas se simplifican al construirse (`simplify.rs`). Las potencias enteras usan `powi`, que es exacta y admite bases negativas.
   - LaTeX: `\frac`, `\sqrt`, `\sin^{2}(…)`, `e^{…}` (`\exp(…)` si el exponente es largo) y signo delante de la fracción. Los nombres se convierten así: `omega`→`\omega`, `ω`→`\omega`, `T_teo`→`T_{\mathrm{teo}}`, `x0`→`x_{0}`; los nombres de varias letras van en `\mathrm`. Admite coma decimal (`0{,}987`) y símbolos definidos por el usuario (`LatexOptions::symbols`, que corresponde a `ParameterConfig.latex`).
   - `model::suggest_parameters` propone como parámetros los nombres que no son la variable ni constantes, para usarlo en la GUI.
-- [ ] Fase 3 — Ajustadores
+- [x] Fase 3 — Ajustadores
+  - API: `fit::fit(&model, &FitData, &FitOptions) -> FitResult`. `FitOptions::from_config(&FitConfig)` y `fit::build_model(&ModelConfig)` enlazan con la configuración. `FitData::from(&SeriesData)`.
+  - `FitResult` incluye: `params` (con los fijos), `free`, `chi2`, `dof`, `weighted`, `converged`, `iterations`, `residuals` (y − f), `sigma` (σ usada por punto), `x_shift` (δ de ODR), `jacobian` (ponderado, n × libres, para la covarianza de la Fase 4) y `warnings` en español.
+  - Elección de `Auto`: varianza efectiva si hay σx; lineal si el modelo es lineal y no tiene límites; si no, LM. EV y ODR sin σx pasan a WLS con un aviso.
+  - Parámetros fijos y límites: los límites se aplican proyectando el paso. El método lineal los ignora y lo avisa.
+  - Nelder–Mead se refina siempre con LM al final, para que el jacobiano y la convergencia sean fiables.
+  - ODR: LM sobre (β, δ) con complemento de Schur, O(n·m²). Su `jacobian` usa la σ efectiva en los x corregidos, que es la covarianza estándar de ODRPACK.
+  - **Validación NIST StRD** (`tests/nist/*.dat`, `tests/nist.rs`):
+    - LM desde el punto de partida 2: los 20 problemas no lineales con 6,4 a 12,7 cifras correctas, incluidos los de dificultad alta.
+    - Desde el punto de partida 1: LM o NM+LM resuelven 18 de 20. Fallan MGH10 (con ambos métodos) y Rat43 con NM+LM.
+    - Mínimos cuadrados lineales: Norris, Pontius y Wampler1–5 con 6,5 a 13 cifras.
+    - Gauss–Newton: los problemas fáciles con 8,6 a 11 cifras.
+  - Lección: con escalado de Marquardt (λ·diag JᵀJ), λ inicial debe ser adimensional (1e‑3). Además, para declarar convergencia por paso pequeño se exige gradiente ≈ 0, y para declararla por χ² estancado, dos iteraciones seguidas.
 - [ ] Fase 4 — Incertidumbres
 - [ ] Fase 5 — Render LaTeX
 - [ ] Fase 6 — GUI I
