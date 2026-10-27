@@ -6,12 +6,15 @@ use std::path::PathBuf;
 
 use fisgraf::fit::{FitData, FitMethod, FitOptions, fit};
 use fisgraf::model::Model;
+use fisgraf::uncertainty::{UncertaintyConfig, estimate};
 
 struct Dataset {
     x: Vec<f64>,
     y: Vec<f64>,
     starts: [Vec<f64>; 2],
     certified: Vec<f64>,
+    /// Desviaciones estándar certificadas de los parámetros.
+    sd: Vec<f64>,
     rss: Option<f64>,
 }
 
@@ -23,6 +26,7 @@ fn load(name: &str) -> Dataset {
 
     let mut starts = [Vec::new(), Vec::new()];
     let mut certified = Vec::new();
+    let mut sd = Vec::new();
     let mut rss = None;
     for line in &lines {
         let t = line.trim_start();
@@ -34,12 +38,14 @@ fn load(name: &str) -> Dataset {
             starts[0].push(v[0]);
             starts[1].push(v[1]);
             certified.push(v[2]);
+            sd.push(v[3]);
         }
         // Lineal: "B0 certificado sd"
         if let Some(rest) = t.strip_prefix('B').filter(|r| r.starts_with(|c: char| c.is_ascii_digit())) {
             let v = nums(rest);
             if v.len() == 3 {
                 certified.push(v[1]);
+                sd.push(v[2]);
             }
         }
         if let Some(v) = t.strip_prefix("Residual Sum of Squares:") {
@@ -57,7 +63,7 @@ fn load(name: &str) -> Dataset {
     if starts[0].is_empty() {
         starts = [vec![0.0; certified.len()], vec![0.0; certified.len()]];
     }
-    Dataset { x, y, starts, certified, rss }
+    Dataset { x, y, starts, certified, sd, rss }
 }
 
 fn lre(value: f64, certified: f64) -> f64 {
@@ -177,3 +183,33 @@ fn linear_least_squares() {
     }
 }
 
+
+/// Las desviaciones estándar certificadas son √diag(s²·(JᵀJ)⁻¹), con s² = RSS/ν:
+/// la covarianza escalada por χ²_red debe reproducirlas.
+#[test]
+fn certified_standard_deviations() {
+    let poly5 = "B0 + B1*x + B2*x^2 + B3*x^3 + B4*x^4 + B5*x^5";
+    let linear = [("Norris", "B0 + B1*x"), ("Pontius", "B0 + B1*x + B2*x^2"), ("Wampler4", poly5), ("Wampler5", poly5)];
+    let cases = NONLINEAR
+        .iter()
+        .map(|(n, e, _)| (*n, *e, FitMethod::LevenbergMarquardt, 1, "b", 1))
+        .chain(linear.iter().map(|(n, e)| (*n, *e, FitMethod::Linear, 0, "B", 0)));
+    let mut failures = Vec::new();
+    for (name, expr, method, start, prefix, first) in cases {
+        let d = load(name);
+        let params: Vec<String> = (0..d.certified.len()).map(|i| format!("{prefix}{}", i + first)).collect();
+        let model = Model::new(expr, "x", &params, &[]).unwrap();
+        let mut opts = FitOptions::new(method, d.starts[start].clone());
+        opts.settings.max_iterations = 5000;
+        opts.settings.tolerance = 1e-14;
+        let data = FitData { x: &d.x, y: &d.y, x_err: None, y_err: None };
+        let r = fit(&model, &data, &opts).unwrap();
+        let unc = estimate(&model, &data, &opts, &r, &UncertaintyConfig::default()).unwrap();
+        let worst = unc.params.iter().zip(&d.sd).map(|(p, c)| lre(p.sigma, *c)).fold(15.0, f64::min);
+        println!("{name:<9} σ LRE {worst:5.1}");
+        if worst < 4.0 {
+            failures.push(name);
+        }
+    }
+    assert!(failures.is_empty(), "fallaron: {failures:?}");
+}

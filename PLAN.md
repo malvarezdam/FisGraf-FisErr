@@ -246,7 +246,15 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
     - Mínimos cuadrados lineales: Norris, Pontius y Wampler1–5 con 6,5 a 13 cifras.
     - Gauss–Newton: los problemas fáciles con 8,6 a 11 cifras.
   - Lección: con escalado de Marquardt (λ·diag JᵀJ), λ inicial debe ser adimensional (1e‑3). Además, para declarar convergencia por paso pequeño se exige gradiente ≈ 0, y para declararla por χ² estancado, dos iteraciones seguidas.
-- [ ] Fase 4 — Incertidumbres
+- [x] Fase 4 — Incertidumbres
+  - API: `uncertainty::estimate(&model, &data, &opts, &fit_result, &UncertaintyConfig) -> UncertaintyResult`. Contiene por parámetro `value`, `sigma`, `minus`, `plus`, `ci_low`, `ci_high` y `fixed`, además de `covariance`, `correlation` (libres × libres), `coverage_factor`, `samples` (bootstrap/MC) y `warnings`.
+  - Covarianza: (JᵀWJ)⁻¹ por SVD con columnas normalizadas. En modo **absoluto** usa intervalos con z (solo si hay pesos; sin pesos pasa a escalado con un aviso). En modo **escalado por χ²_red** usa t de Student con ν grados de libertad.
+  - Bootstrap de residuos: estandarizados por σᵢ e inflados por √(n/ν). Bootstrap de pares: descarta muestras con menos x distintos que parámetros. Monte Carlo: ruido normal con σx y σy sobre los datos medidos (GUM‑S1). Jackknife: n ajustes, var = (n−1)/n·Σ(θᵢ−θ̄)². Perfil Δχ²: bisección por cada lado, con Δ = escala para 1σ y Δ = k²·escala para el intervalo.
+  - Los re-muestreos corren en paralelo con un generador por muestra derivado de (semilla, índice), así el resultado es reproducible sin importar cuántos hilos haya. Se exige que converja al menos el 50 % de las muestras.
+  - `confidence_band`: con bootstrap/MC usa percentiles de las curvas; con los demás métodos, propagación lineal ∇fᵀC∇f.
+  - `goodness_of_fit`: χ², χ²_red, p-valor (solo con pesos), SSR, s, R², R² ajustado, AIC, AICc y BIC.
+  - `rounding::round_gum`: regla del PDG (100–354 → 2 cifras, 355–949 → 1, 950–999 → sube a 1000), o 1 o 2 cifras fijas. Usa notación científica si max(|v|, σ) ≥ 10⁴ o < 10⁻³. Formatos `plain()` y `latex()` con coma decimal.
+  - **Validación NIST**: las σ certificadas de 20 problemas no lineales y 4 lineales se reproducen con 7,0 a 13,8 cifras correctas (`tests/nist.rs::certified_standard_deviations`).
 - [ ] Fase 5 — Render LaTeX
 - [ ] Fase 6 — GUI I
 - [ ] Fase 7 — GUI II
