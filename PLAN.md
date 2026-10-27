@@ -227,7 +227,12 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - Los números guardados como texto aceptan coma decimal y separador de miles. Un único `1,000` se lee como 1,0 (convención en español).
   - Los mensajes de error indican la serie y la celda, p. ej. `serie «X»: la celda Datos!A11 contiene «texto», que no es un número`.
   - Excel de ejemplo en `examples/datos/ejemplo.xlsx` (hojas Pendulo, Imanes, Hooke). Se regenera con `cargo run --example generar_excel_ejemplo` y los tests dependen de él.
-- [ ] Fase 2 — Ecuaciones
+- [x] Fase 2 — Ecuaciones
+  - `model::Model::new(expr, variable, &params, &constants)` valida la ecuación y ofrece `eval`, `gradient` (∂f/∂pₖ exactas), `dfdx`, `is_linear` y `to_latex`. Rechaza nombres sin definir, parámetros que no aparecen, nombres repetidos o reservados.
+  - Sintaxis: `+ - * / ^` (`**` también), multiplicación implícita (`2pi`, `2(x+1)`, `a(x-b)`), `pi`, `e` y funciones `sin cos tan asin acos atan sinh cosh tanh exp ln log10 sqrt abs sign pow(a,b)`, con alias `sen`, `arcsin`, `sgn`. **`log` es el logaritmo natural**, como en C y Python; el decimal es `log10`. `-x^2` = −(x²). La potencia asocia a la derecha. `1/2x` = x/2.
+  - Las derivadas se simplifican al construirse (`simplify.rs`). Las potencias enteras usan `powi`, que es exacta y admite bases negativas.
+  - LaTeX: `\frac`, `\sqrt`, `\sin^{2}(…)`, `e^{…}` (`\exp(…)` si el exponente es largo) y signo delante de la fracción. Los nombres se convierten así: `omega`→`\omega`, `ω`→`\omega`, `T_teo`→`T_{\mathrm{teo}}`, `x0`→`x_{0}`; los nombres de varias letras van en `\mathrm`. Admite coma decimal (`0{,}987`) y símbolos definidos por el usuario (`LatexOptions::symbols`, que corresponde a `ParameterConfig.latex`).
+  - `model::suggest_parameters` propone como parámetros los nombres que no son la variable ni constantes, para usarlo en la GUI.
 - [ ] Fase 3 — Ajustadores
 - [ ] Fase 4 — Incertidumbres
 - [ ] Fase 5 — Render LaTeX
