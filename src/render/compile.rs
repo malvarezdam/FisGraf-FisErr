@@ -51,8 +51,14 @@ pub(crate) fn run(program: &str, args: &[&str], dir: &Path, timeout: Duration) -
     }
 }
 
+/// Una compilación LaTeX a la vez dentro del programa: dos LuaLaTeX simultáneos
+/// (p. ej. exportar mientras compila la vista previa) compiten por la caché de
+/// fuentes y uno puede fallar.
+static LATEX_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 /// Compila `tex` en `dir/{stem}.tex` y devuelve la ruta del PDF.
 pub fn compile_pdf(tex: &str, engine: LatexEngine, dir: &Path, stem: &str, timeout: Duration) -> Result<PathBuf, RenderError> {
+    let _guard = LATEX_LOCK.lock().unwrap_or_else(|e| e.into_inner());
     std::fs::create_dir_all(dir).map_err(|e| RenderError::Io(e.to_string()))?;
     let tex_path = dir.join(format!("{stem}.tex"));
     let pdf = dir.join(format!("{stem}.pdf"));

@@ -275,3 +275,35 @@ fn all_examples_compute_cleanly() {
         }
     }
 }
+
+#[test]
+fn propagation_tab_end_to_end() {
+    let mut app = FisGrafApp::default();
+    app.tab = Tab::Propagation;
+    let mut h = harness(app);
+    h.run_steps(3);
+    h.get_by_label("+ Nuevo cálculo").click();
+    h.run_steps(3);
+    {
+        let p = &mut h.state_mut().project.propagations[0];
+        p.name = "g".into();
+        p.unit = "m/s^2".into();
+        p.expression = "4*pi^2*L/T^2".into();
+        p.samples = 20_000;
+    }
+    h.run_steps(3);
+    h.get_by_label("Detectar variables").click();
+    h.run_steps(3);
+    {
+        let p = &mut h.state_mut().project.propagations[0];
+        assert_eq!(p.variables.len(), 2);
+        p.variables[0].value = 1.0; // L
+        p.variables[0].sigma = 0.001;
+        p.variables[1].value = 2.007; // T
+        p.variables[1].sigma = 0.005;
+    }
+    h.run_steps(3);
+    h.get_by_label_contains("g = 9,80 ± 0,05 m/s²");
+    h.get_by_label("Copiar fórmula de propagación");
+    h.get_by_label_contains("Presupuesto de incertidumbre");
+}

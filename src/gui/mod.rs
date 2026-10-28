@@ -23,7 +23,7 @@ use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
 use crate::config::{PROJECT_EXTENSION, ProjectConfig};
 use crate::data::{CellRef, Workbook};
 use history::History;
-pub use panels::{Target, export_project, parse_tick_list, sync_parameters};
+pub use panels::{Target, export_project, parse_tick_list, result_latex, sync_parameters, sync_variables};
 use worker::Worker;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,9 +35,10 @@ pub enum Tab {
     Axes,
     Style,
     Export,
+    Propagation,
 }
 
-const TABS: [(Tab, &str); 7] = [
+const TABS: [(Tab, &str); 8] = [
     (Tab::Data, "Datos"),
     (Tab::Series, "Series"),
     (Tab::Fits, "Ajustes"),
@@ -45,6 +46,7 @@ const TABS: [(Tab, &str); 7] = [
     (Tab::Axes, "Ejes"),
     (Tab::Style, "Estilo"),
     (Tab::Export, "Exportar"),
+    (Tab::Propagation, "Propagación"),
 ];
 
 /// Acción que espera confirmación porque hay cambios sin guardar.
@@ -99,6 +101,9 @@ pub struct FisGrafApp {
     pub show_results: bool,
     /// Vista central: `true` = LaTeX real, `false` = vista rápida.
     pub latex_view: bool,
+    pub selected_propagation: Option<u32>,
+    /// Último cálculo de propagación (se repite solo si cambia la configuración).
+    propagation_cache: Option<(crate::config::PropagationConfig, Result<crate::propagation::PropagationReport, String>)>,
     latex_preview: latex_preview::LatexPreview,
 }
 
@@ -131,6 +136,8 @@ impl Default for FisGrafApp {
             last_export: None,
             show_results: true,
             latex_view: false,
+            selected_propagation: None,
+            propagation_cache: None,
             latex_preview: Default::default(),
         }
     }
@@ -403,7 +410,7 @@ impl FisGrafApp {
             }
         });
         ui.separator();
-        egui::ScrollArea::vertical().auto_shrink(false).show(ui, |ui| match self.tab {
+        egui::ScrollArea::both().auto_shrink(false).show(ui, |ui| match self.tab {
             Tab::Data => self.data_panel(ui),
             Tab::Series => self.series_panel(ui),
             Tab::Fits => self.fits_panel(ui),
@@ -411,6 +418,7 @@ impl FisGrafApp {
             Tab::Axes => self.axes_panel(ui),
             Tab::Style => self.style_panel(ui),
             Tab::Export => self.export_panel(ui),
+            Tab::Propagation => self.propagation_panel(ui),
         });
     }
 

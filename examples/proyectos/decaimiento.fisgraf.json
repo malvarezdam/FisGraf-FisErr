@@ -110,6 +110,7 @@
       }
     }
   ],
+  "propagations": [],
   "x_axis": {
     "label": "Tiempo $t$ [\\unit{s}]",
     "min": null,

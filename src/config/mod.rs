@@ -7,6 +7,7 @@ pub mod axis;
 pub mod export;
 pub mod figure;
 pub mod fit;
+pub mod propagation;
 pub mod reference;
 pub mod series;
 pub mod style;
@@ -26,6 +27,7 @@ pub use fit::{
     BootstrapKind, CovarianceMode, FitConfig, FitMethod, FitSettings, ModelConfig, ParameterConfig,
     UncertaintyConfig, UncertaintyMethod,
 };
+pub use propagation::{Correlation, InputDistribution, PropagationConfig, PropagationMethod, PropagationVariable};
 pub use reference::{NamedValue, ReferenceFunction};
 pub use series::{ErrorSpec, SeriesConfig};
 pub use style::{DashPattern, LineStyle, Marker, Rgb};
@@ -45,6 +47,8 @@ pub struct ProjectConfig {
     pub series: Vec<SeriesConfig>,
     pub fits: Vec<FitConfig>,
     pub references: Vec<ReferenceFunction>,
+    /// Cálculos de propagación de errores (independientes del gráfico).
+    pub propagations: Vec<PropagationConfig>,
     pub x_axis: AxisConfig,
     pub y_axis: AxisConfig,
     pub figure: FigureConfig,
@@ -59,6 +63,7 @@ impl Default for ProjectConfig {
             series: Vec::new(),
             fits: Vec::new(),
             references: Vec::new(),
+            propagations: Vec::new(),
             x_axis: AxisConfig::default(),
             y_axis: AxisConfig::default(),
             figure: FigureConfig::default(),
@@ -116,7 +121,8 @@ impl ProjectConfig {
         let series = self.series.iter().map(|s| s.id);
         let fits = self.fits.iter().map(|f| f.id);
         let refs = self.references.iter().map(|r| r.id);
-        series.chain(fits).chain(refs).max().map_or(1, |m| m + 1)
+        let props = self.propagations.iter().map(|p| p.id);
+        series.chain(fits).chain(refs).chain(props).max().map_or(1, |m| m + 1)
     }
 
     /// Añade una serie con el siguiente color de la paleta y devuelve su id.

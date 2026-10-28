@@ -7,5 +7,6 @@ pub mod fit;
 pub mod gui;
 pub mod model;
 pub mod pipeline;
+pub mod propagation;
 pub mod render;
 pub mod uncertainty;

@@ -203,3 +203,39 @@ fn all_fonts_compile() {
     }
     assert!(failures.is_empty(), "{failures:?}");
 }
+
+/// La fórmula de propagación y el resultado que se copian compilan en LaTeX.
+#[test]
+fn propagation_latex_compiles() {
+    if !has_latex(LatexEngine::PdfLatex) {
+        return;
+    }
+    use fisgraf::config::{PropagationConfig, PropagationVariable};
+    let mut c = PropagationConfig {
+        name: "g".into(),
+        unit: "m/s^2".into(),
+        expression: "4*pi^2*L/T^2".into(),
+        samples: 2000,
+        ..Default::default()
+    };
+    for (n, v, s) in [("L", 1.0, 0.001), ("T", 2.007, 0.005)] {
+        c.variables.push(PropagationVariable { name: n.into(), value: v, sigma: s, ..Default::default() });
+    }
+    let report = fisgraf::propagation::propagate(&c).unwrap();
+    let formula = fisgraf::propagation::formula_latex(&c, &report, true);
+    let result = fisgraf::gui::result_latex(&c, &report, true);
+    assert_eq!(result, r"$g = \left(9{,}80 \pm 0{,}05\right)\,\unit{m/s^2}$");
+    let doc = format!(
+        r"\documentclass{{article}}
+\usepackage{{amsmath}}
+\usepackage{{siunitx}}
+\begin{{document}}
+{formula}
+{result}
+\end{{document}}
+"
+    );
+    let dir = temp_dir("propagacion");
+    compile_pdf(&doc, LatexEngine::PdfLatex, &dir, "p", COMPILE_TIMEOUT).unwrap();
+    std::fs::remove_dir_all(&dir).unwrap();
+}

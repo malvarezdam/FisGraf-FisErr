@@ -46,6 +46,12 @@ La ventana tiene las **pestañas de configuración** a la izquierda, la **vista 
 6. **Estilo.** Tamaño y proporción (4:3, 16:9, 9:16, áurea o personalizada), fuente y tamaño de letra, motor LaTeX, cuadrícula, leyenda, cuadro de resultados, panel de residuos y preámbulo extra.
 7. **Exportar.** PDF, PNG (con la resolución que elijas), SVG, `.tex` completo y un **fragmento `tikzpicture`** para pegar con `\input{}` en tu informe. **Copiar código tikzpicture** lo copia directo al portapapeles.
 
+8. **Propagación.** Calculadora de errores, sin gráfico:
+   - Escribe la ecuación de la magnitud (p. ej. `4*pi^2*L/T^2` para g) y pulsa **Detectar variables**.
+   - Marca cada nombre como **variable medida** (valor, σ y distribución) o **constante** (sin error). Si dos mediciones no son independientes, indica su correlación ρ.
+   - Elige el método. Obtienes el resultado redondeado según la GUM, el error relativo, la incertidumbre expandida, una **comparación de los cinco métodos**, el **presupuesto de incertidumbre** (qué medición aporta más error) y el histograma de Monte Carlo.
+   - **Copiar fórmula de propagación** da en LaTeX σ_f = √(Σ (∂f/∂xᵢ)² σᵢ²) con las derivadas parciales explícitas.
+
 **Vista previa:** la **Vista rápida** es instantánea y aproximada. La **Vista LaTeX** compila el gráfico real en segundo plano y tarda unos segundos.
 
 **Resultados:** para cada ajuste se muestran los parámetros redondeados según la GUM, el intervalo de confianza, χ², χ²_red, p-valor, R², AIC/BIC y la matriz de correlación. **Copiar tabla LaTeX** genera una tabla lista para tu documento.
@@ -94,6 +100,18 @@ Las ecuaciones se escriben con **sintaxis calculable**. FisGraf las convierte a 
 | Jackknife | Quieres ver cuánto depende el resultado de cada punto. |
 | Perfil de χ² | El modelo es muy no lineal: da errores asimétricos −σ/+σ. |
 
+**Propagación de errores**
+
+| Método | Úsalo cuando… |
+|---|---|
+| Lineal (derivadas parciales) | Casi siempre: σ_f = √(Σ (∂f/∂xᵢ)² σᵢ²) más covarianzas. Es el método de la GUM. |
+| Segundo orden | f es muy curva o los errores relativos son grandes: añade derivadas segundas y terceras. |
+| Monte Carlo | Quieres el resultado más fiable sin suponer linealidad. Admite entradas uniformes o triangulares e intervalos asimétricos. |
+| Kragten | Quieres el equivalente numérico del lineal (mover cada variable ±σ). Es el método de EURACHEM. |
+| Cota máxima | Te piden el «error máximo» Σ\|∂f/∂xᵢ\|σᵢ. Es una cota del peor caso, no una σ. |
+
+Si los métodos difieren mucho entre sí, f no es lineal en el rango de tus errores: confía en Monte Carlo.
+
 **Cómo leer χ²_red:** si es ≈ 1, el modelo y los errores son coherentes. Si es ≫ 1, subestimaste los errores o el modelo no describe los datos. Si es ≪ 1, sobrestimaste los errores.
 
 ## 6. Ejemplos incluidos
@@ -101,7 +119,7 @@ Las ecuaciones se escriben con **sintaxis calculable**. FisGraf las convierte a 
 En **Archivo → Abrir ejemplo**:
 
 - **imanes**: réplica de un gráfico de informe, con dos funciones de referencia y datos medidos con Tracker.
-- **pendulo**: T = 2π√(L/g) con errores en x e y, banda de confianza, cuadro de resultados y residuos.
+- **pendulo**: T = 2π√(L/g) con errores en x e y, banda de confianza, cuadro de resultados y residuos. En la pestaña Propagación trae el cálculo de g = 4π²L/T² a partir de una medición.
 - **hooke**: números escritos como texto con coma decimal en el Excel, error por resolución de la regla y fuente Palatino.
 - **decaimiento**: N₀e^(−t/τ) + B con eje logarítmico y errores asimétricos por perfil de χ².
 
@@ -131,6 +149,7 @@ cargo clippy --all-targets
 - `src/model`: ecuaciones, derivadas simbólicas y LaTeX.
 - `src/fit`: métodos de ajuste, validados con los 27 conjuntos de NIST StRD.
 - `src/uncertainty`: métodos de incertidumbre, estadísticos y redondeo GUM.
+- `src/propagation`: propagación de errores por los cinco métodos.
 - `src/pipeline.rs`: del proyecto a la escena.
 - `src/render`: pgfplots, compilación y exportación.
 - `src/gui`: interfaz egui.

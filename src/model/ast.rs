@@ -175,6 +175,28 @@ impl Expr {
         }
     }
 
+    /// Evalúa buscando cada nombre con `lookup` (NaN si no existe). Más lenta
+    /// que un [`crate::model::Model`] compilado; útil para expresiones sueltas.
+    pub fn eval_with(&self, lookup: &dyn Fn(&str) -> Option<f64>) -> f64 {
+        let ev = |e: &Expr| e.eval_with(lookup);
+        match self {
+            Expr::Num(v) => *v,
+            Expr::Pi => std::f64::consts::PI,
+            Expr::E => std::f64::consts::E,
+            Expr::Var(n) => lookup(n).unwrap_or(f64::NAN),
+            Expr::Neg(a) => -ev(a),
+            Expr::Add(a, b) => ev(a) + ev(b),
+            Expr::Sub(a, b) => ev(a) - ev(b),
+            Expr::Mul(a, b) => ev(a) * ev(b),
+            Expr::Div(a, b) => ev(a) / ev(b),
+            Expr::Pow(a, b) => match **b {
+                Expr::Num(n) if n.fract() == 0.0 && n.abs() <= 1024.0 => ev(a).powi(n as i32),
+                _ => ev(a).powf(ev(b)),
+            },
+            Expr::Call(f, a) => f.apply(ev(a)),
+        }
+    }
+
     /// Precedencia para imprimir en sintaxis calculable.
     fn prec(&self) -> u8 {
         match self {

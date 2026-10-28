@@ -61,6 +61,7 @@
       }
     }
   ],
+  "propagations": [],
   "x_axis": {
     "label": "Posición del par de imanes $x$ [\\unit{cm}]",
     "min": 25.15,

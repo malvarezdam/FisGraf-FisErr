@@ -75,6 +75,40 @@
     }
   ],
   "references": [],
+  "propagations": [
+    {
+      "id": 3,
+      "name": "g",
+      "latex": "",
+      "unit": "m/s^2",
+      "expression": "4*pi^2*L/T^2",
+      "variables": [
+        {
+          "name": "L",
+          "value": 1.0,
+          "sigma": 0.0002886751345948129,
+          "constant": false,
+          "distribution": "Uniform",
+          "latex": "",
+          "unit": "m"
+        },
+        {
+          "name": "T",
+          "value": 2.007,
+          "sigma": 0.005,
+          "constant": false,
+          "distribution": "Normal",
+          "latex": "",
+          "unit": "s"
+        }
+      ],
+      "correlations": [],
+      "method": "Linear",
+      "samples": 200000,
+      "seed": 42,
+      "confidence_level": 0.95
+    }
+  ],
   "x_axis": {
     "label": "Longitud $L$ [\\unit{m}]",
     "min": null,

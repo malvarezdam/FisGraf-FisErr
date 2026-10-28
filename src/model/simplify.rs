@@ -95,6 +95,11 @@ pub fn pow(a: Expr, b: Expr) -> Expr {
         (_, b) if is_num(&b, 0.0) => num(1.0),
         (a, b) if is_num(&b, 1.0) => a,
         (a, _) if is_num(&a, 1.0) => num(1.0),
+        // (x^a)^n = x^(a·n) con n entero.
+        (Expr::Pow(x, a), Expr::Num(n)) if n.fract() == 0.0 && matches!(*a, Expr::Num(_)) => {
+            let Expr::Num(a) = *a else { unreachable!() };
+            pow(*x, num(a * n))
+        }
         (a, b) => Expr::Pow(Box::new(a), Box::new(b)),
     }
 }
@@ -144,6 +149,8 @@ mod tests {
         assert_eq!(s("a - -b"), "a + b");
         assert_eq!(s("x^1 + y^0"), "x + 1");
         assert_eq!(s("x*x"), "x^2");
+        assert_eq!(s("(T^2)^2"), "T^4");
+        assert_eq!(s("(x^0.5)^2"), "x");
         assert_eq!(s("2^3 + sqrt(4)"), "10");
         assert_eq!(s("1/3"), "1/3");
         assert_eq!(s("6/3"), "2");

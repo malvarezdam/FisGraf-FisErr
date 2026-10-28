@@ -72,3 +72,28 @@ pub const ENGINES: [(LatexEngine, &str); 2] = [
     (LatexEngine::LuaLatex, "LuaLaTeX (cualquier fuente)"),
     (LatexEngine::PdfLatex, "pdfLaTeX"),
 ];
+
+pub const PROPAGATION_METHODS: [(crate::config::PropagationMethod, &str); 5] = [
+    (crate::config::PropagationMethod::Linear, "Lineal (derivadas parciales, GUM)"),
+    (crate::config::PropagationMethod::SecondOrder, "Segundo orden (GUM §5.1.2)"),
+    (crate::config::PropagationMethod::MonteCarlo, "Monte Carlo (GUM Suplemento 1)"),
+    (crate::config::PropagationMethod::Kragten, "Kragten (diferencias finitas)"),
+    (crate::config::PropagationMethod::MaxBound, "Cota máxima (Σ|∂f/∂x|·σ)"),
+];
+
+pub fn propagation_help(m: crate::config::PropagationMethod) -> &'static str {
+    use crate::config::PropagationMethod as P;
+    match m {
+        P::Linear => "σ_f = √(Σ (∂f/∂xᵢ)² σᵢ²) + covarianzas. El método estándar; exacto si f es lineal en el rango de los errores.",
+        P::SecondOrder => "Añade términos con derivadas segundas y terceras y corrige el valor esperado. Úsalo si f es muy curva o los errores relativos son grandes.",
+        P::MonteCarlo => "Simula muchas mediciones posibles y mira cómo se distribuye f. No supone linealidad; da intervalos asimétricos si corresponde.",
+        P::Kragten => "Mueve cada variable ±σ y mide el cambio de f. Equivale al lineal sin derivar; es el método de las guías EURACHEM.",
+        P::MaxBound => "Suma de los errores en valor absoluto: una cota del peor caso, más grande que σ. Habitual en cursos introductorios; no es una incertidumbre estándar.",
+    }
+}
+
+pub const DISTRIBUTIONS: [(crate::config::InputDistribution, &str); 3] = [
+    (crate::config::InputDistribution::Normal, "Normal"),
+    (crate::config::InputDistribution::Uniform, "Uniforme"),
+    (crate::config::InputDistribution::Triangular, "Triangular"),
+];

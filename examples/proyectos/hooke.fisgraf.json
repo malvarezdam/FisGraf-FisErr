@@ -73,6 +73,7 @@
     }
   ],
   "references": [],
+  "propagations": [],
   "x_axis": {
     "label": "Masa $m$ [\\unit{kg}]",
     "min": 0.0,

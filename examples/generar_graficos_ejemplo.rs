@@ -153,6 +153,27 @@ fn pendulo(excel: &Path) -> ProjectConfig {
     p.figure.results_box = ResultsBoxConfig { show: true, position: LegendPosition::NorthWest };
     p.figure.residuals_panel = true;
     p.export = ExportConfig { file_stem: "pendulo".into(), png: true, svg: true, ..Default::default() };
+
+    // Propagación de errores: g a partir de una sola medición de L y T.
+    let id = p.next_id();
+    p.propagations.push(PropagationConfig {
+        id,
+        name: "g".into(),
+        unit: "m/s^2".into(),
+        expression: "4*pi^2*L/T^2".into(),
+        variables: vec![
+            PropagationVariable {
+                name: "L".into(),
+                value: 1.000,
+                sigma: 0.001 / (2.0 * 3f64.sqrt()),
+                distribution: InputDistribution::Uniform,
+                unit: "m".into(),
+                ..Default::default()
+            },
+            PropagationVariable { name: "T".into(), value: 2.007, sigma: 0.005, unit: "s".into(), ..Default::default() },
+        ],
+        ..Default::default()
+    });
     p
 }
 

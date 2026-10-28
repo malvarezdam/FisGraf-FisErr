@@ -327,3 +327,22 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - Pruebas: la vista LaTeX compila dentro de la aplicación y los 4 ejemplos calculan sin avisos. Total: 90 pruebas.
 
 **Proyecto completo.** Todas las fases del plan están terminadas.
+
+### Agregado después del plan
+
+- [x] **Propagación de errores** (pedido del usuario)
+  - `config::PropagationConfig` se guarda en `ProjectConfig.propagations` (`#[serde(default)]`, así los proyectos viejos siguen abriéndose). Cada variable es medida (valor, σ, distribución normal, uniforme o triangular) o constante. Las correlaciones son opcionales.
+  - `propagation::propagate(&cfg) -> PropagationReport` calcula siempre los 5 métodos:
+    - lineal (GUM ec. 13, con covarianzas)
+    - segundo orden (GUM §5.1.2: derivadas 2.ª y 3.ª simbólicas y corrección del valor esperado)
+    - Monte Carlo (GUM‑S1 con cópula gaussiana para correlaciones; intervalo por percentiles e histograma)
+    - Kragten (diferencias centrales ±σ)
+    - cota máxima Σ|∂f/∂x|σ
+
+    El informe incluye también el presupuesto de incertidumbre y las derivadas simbólicas. `propagation::formula_latex` genera la fórmula σ_f = √(…) en `align*`.
+  - Pruebas analíticas: producto (cuadratura relativa), g del péndulo, x² con x~N(0,1) (lineal 0, segundo orden y MC = χ²₁), correlaciones ±ρ, distribuciones uniforme y triangular. La fórmula LaTeX compila (`tests/render.rs`).
+  - GUI: pestaña **Propagación** (`gui/panels/propagation.rs`) con "Detectar variables", tabla de variables, correlaciones, método con explicación, resultado GUM, error relativo, incertidumbre expandida, comparación de métodos, presupuesto con barras, histograma MC sobre fondo claro y copia en LaTeX o texto.
+  - Otros cambios:
+    - `Expr::eval_with` evalúa por nombre.
+    - Nueva simplificación (xᵃ)ⁿ = xᵃⁿ.
+    - `render::compile::compile_pdf` serializa las compilaciones con un mutex: dos LuaLaTeX simultáneos compiten por la caché de fuentes.
