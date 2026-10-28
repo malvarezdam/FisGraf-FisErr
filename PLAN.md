@@ -289,5 +289,27 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
     - kittest exige nombre accesible en los ComboBox: `widgets::accessible`.
     - Los números de la tabla se muestran con 12 cifras significativas (`0.30000000000000004` → `0.3`).
   - Verificado a mano con capturas de pantalla (imanes y péndulo) y con 6 pruebas de kittest (`tests/gui.rs`).
-- [ ] Fase 7 — GUI II
+- [x] Fase 7 — GUI II
+  - **Ajustes** (`gui/panels/fits.rs`):
+    - Crear, duplicar, eliminar y activar ajustes; elegir a qué series se aplican.
+    - Ecuación con validación y vista LaTeX en vivo (con botón para copiar el LaTeX). Avisa si el modelo es lineal.
+    - "Actualizar parámetros" (`gui::sync_parameters`) agrega los nombres nuevos de la ecuación, quita los que ya no están y conserva la configuración de los que siguen.
+    - Tabla de parámetros: inicial, fijo, mín/máx opcionales, símbolo LaTeX y unidad siunitx.
+    - Método de ajuste con explicación (`gui/names.rs`) y opciones avanzadas (iteraciones, tolerancia, pesos).
+    - Incertidumbre: método, modo de covarianza, tipo de bootstrap, muestras, semilla y nivel de confianza.
+    - Curva: estilo (hereda el color de la serie), banda, dominio, puntos y cuadro de resultados.
+    - Estado por serie: convergencia, χ²_red y avisos.
+  - **Referencias**: ecuación, variable, tabla de constantes con "Agregarlas" para los nombres sin valor, LaTeX propio, dominio y estilo.
+  - **Ejes**: título LaTeX, límites opcionales, escala, marcas (automáticas / cada… / en posiciones `1; 2,5; 4`, que lee `gui::parse_tick_list`), marcas menores, dirección y formato numérico completo.
+  - **Estilo**: título, ancho, proporción (con tamaño resultante en cm), fuente (incluida una del sistema, que avisa si no se usa LuaLaTeX), tamaño, motor, cuadrícula, leyenda (posición, columnas, marco, opacidad), cuadro de resultados, residuos y preámbulo extra.
+  - **Exportar**:
+    - Carpeta: la elegida, o la del proyecto si no se eligió.
+    - Exporta en otro hilo (`gui::export_project`) y lista los archivos con botón "Abrir".
+    - "Copiar código tikzpicture" copia el fragmento sin escribir archivos.
+  - **Resultados** (panel inferior, pestañas Resultados / Mensajes con contador):
+    - Por ajuste: método, iteraciones y pesos; parámetros con redondeo GUM, σ (o −/+ en el perfil) e IC; χ², ν, χ²_red, p, R², s, AIC/BIC.
+    - Correlación con alerta si |ρ| > 0,95.
+    - "Copiar tabla LaTeX" (`gui::results::results_latex`) y "Copiar texto".
+  - Lección: un panel de egui guarda el tamaño de su contenido. Si el contenido no llena el panel (o si lo fuerza a crecer), el alto queda mal. Lo correcto es envolver todo en un `ScrollArea` con `auto_shrink(false)`.
+  - Verificado con capturas de todas las pestañas y con 12 pruebas de kittest (incluida la exportación real a PDF).
 - [ ] Fase 8 — Vista previa LaTeX y pulido

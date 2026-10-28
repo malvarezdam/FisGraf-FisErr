@@ -12,6 +12,26 @@ pub fn to_color32(c: Rgb) -> Color32 {
     Color32::from_rgb(c.0, c.1, c.2)
 }
 
+pub const WARN_COLOR: Color32 = Color32::from_rgb(0xC0, 0x80, 0x00);
+
+/// Campo numérico con paso proporcional al valor (sirve igual para 9,8 que para 1e-6).
+pub fn number(ui: &mut Ui, v: &mut f64) -> Response {
+    let speed = (v.abs() * 0.005).max(1e-9);
+    ui.add(egui::DragValue::new(v).speed(speed).max_decimals(12))
+}
+
+/// Valor opcional: casilla para activarlo y campo numérico. `default` es el
+/// valor inicial al activarlo.
+pub fn optional_number(ui: &mut Ui, label: &str, v: &mut Option<f64>, default: f64) {
+    let mut on = v.is_some();
+    if ui.checkbox(&mut on, label).changed() {
+        *v = on.then_some(v.unwrap_or(default));
+    }
+    if let Some(x) = v {
+        number(ui, x);
+    }
+}
+
 pub fn rgb_edit(ui: &mut Ui, c: &mut Rgb) -> Response {
     let mut v = [c.0, c.1, c.2];
     let r = ui.color_edit_button_srgb(&mut v);

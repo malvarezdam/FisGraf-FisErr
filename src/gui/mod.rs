@@ -6,8 +6,10 @@
 
 mod fonts;
 pub mod history;
+mod names;
 mod panels;
 mod preview;
+pub mod results;
 pub mod text;
 pub mod widgets;
 pub mod worker;
@@ -20,7 +22,7 @@ use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
 use crate::config::{PROJECT_EXTENSION, ProjectConfig};
 use crate::data::{CellRef, Workbook};
 use history::History;
-pub use panels::Target;
+pub use panels::{Target, export_project, parse_tick_list, sync_parameters};
 use worker::Worker;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -87,6 +89,13 @@ pub struct FisGrafApp {
     close_confirmed: bool,
     title: String,
     fonts_installed: bool,
+    pub selected_fit: Option<u32>,
+    pub selected_reference: Option<u32>,
+    /// Exportación en curso.
+    export_job: Option<std::sync::mpsc::Receiver<Result<crate::render::ExportReport, String>>>,
+    pub last_export: Option<Result<crate::render::ExportReport, String>>,
+    /// Panel inferior: `true` = resultados, `false` = mensajes.
+    pub show_results: bool,
 }
 
 impl Default for FisGrafApp {
@@ -112,6 +121,11 @@ impl Default for FisGrafApp {
             close_confirmed: false,
             title: String::new(),
             fonts_installed: false,
+            selected_fit: None,
+            selected_reference: None,
+            export_job: None,
+            last_export: None,
+            show_results: true,
         }
     }
 }
@@ -363,14 +377,31 @@ impl FisGrafApp {
         egui::ScrollArea::vertical().auto_shrink(false).show(ui, |ui| match self.tab {
             Tab::Data => self.data_panel(ui),
             Tab::Series => self.series_panel(ui),
-            _ => {
-                ui.add_space(20.0);
-                ui.label("Esta sección llega en la Fase 7 del plan.");
-            }
+            Tab::Fits => self.fits_panel(ui),
+            Tab::References => self.references_panel(ui),
+            Tab::Axes => self.axes_panel(ui),
+            Tab::Style => self.style_panel(ui),
+            Tab::Export => self.export_panel(ui),
         });
     }
 
     fn status_panel(&mut self, ui: &mut Ui) {
+        let warnings = self.worker.latest.as_ref().map_or(0, |o| o.scene.warnings.len());
+        let errors = self.messages.iter().filter(|m| m.error).count() + usize::from(self.workbook_error.is_some());
+        ui.horizontal(|ui| {
+            ui.selectable_value(&mut self.show_results, true, RichText::new("Resultados").strong());
+            let label = match (warnings, errors) {
+                (0, 0) => "Mensajes".to_owned(),
+                (w, 0) => format!("Mensajes (⚠ {w})"),
+                (w, e) => format!("Mensajes (⚠ {w}, ✖ {e})"),
+            };
+            ui.selectable_value(&mut self.show_results, false, RichText::new(label).strong());
+        });
+        ui.separator();
+        if self.show_results {
+            self.results_panel(ui);
+            return;
+        }
         egui::ScrollArea::vertical().stick_to_bottom(true).auto_shrink(false).show(ui, |ui| {
             if let Some(e) = &self.workbook_error {
                 ui.colored_label(widgets::ERROR_COLOR, format!("Excel: {e}"));
@@ -433,10 +464,11 @@ impl FisGrafApp {
             self.fonts_installed = true;
         }
         self.sync_workbook();
+        self.poll_export();
         self.shortcuts(ui);
 
         egui::Panel::top("menu").show(ui, |ui| self.menu(ui));
-        egui::Panel::bottom("mensajes").resizable(true).default_size(90.0).show(ui, |ui| self.status_panel(ui));
+        egui::Panel::bottom("mensajes").resizable(true).default_size(220.0).min_size(60.0).show(ui, |ui| self.status_panel(ui));
         egui::Panel::left("controles").resizable(true).default_size(470.0).min_size(320.0).show(ui, |ui| self.tabs(ui));
         egui::CentralPanel::default_margins().show(ui, |ui| {
             let busy = self.worker.is_busy();

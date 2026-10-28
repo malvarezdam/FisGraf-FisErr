@@ -134,3 +134,112 @@ fn save_marks_clean() {
     assert!(!app.is_dirty());
     std::fs::remove_file(path).unwrap();
 }
+
+fn computed_app(name: &str) -> FisGrafApp {
+    let mut app = FisGrafApp::default();
+    app.open_path(&example(name));
+    let book = app.workbook.clone();
+    app.worker.request(&app.project);
+    app.worker.wait(book);
+    app
+}
+
+#[test]
+fn all_tabs_and_results_draw() {
+    let app = computed_app("pendulo");
+    let mut h = harness(app);
+    for tab in [Tab::Data, Tab::Series, Tab::Fits, Tab::References, Tab::Axes, Tab::Style, Tab::Export] {
+        h.state_mut().tab = tab;
+        h.run_steps(3);
+    }
+    // Panel de resultados: el parámetro g redondeado según la GUM.
+    h.get_by_label("Copiar tabla LaTeX");
+    h.get_by_label_contains("9,784 ± 0,022");
+    h.state_mut().show_results = false;
+    h.run_steps(2);
+}
+
+#[test]
+fn new_fit_from_button_and_parameter_sync() {
+    let mut app = FisGrafApp::default();
+    app.open_path(&example("imanes"));
+    app.tab = Tab::Fits;
+    let mut h = harness(app);
+    h.run_steps(3);
+    h.get_by_label("+ Nuevo ajuste").click();
+    h.run_steps(3);
+    let app = h.state_mut();
+    assert_eq!(app.project.fits.len(), 1);
+    let series = app.project.series[0].id;
+    assert_eq!(app.project.fits[0].series_ids, [series]);
+
+    // Cambiar la ecuación y sincronizar parámetros conserva los que siguen.
+    let f = &mut app.project.fits[0];
+    f.model.parameters[0].initial = 0.0128;
+    f.model.expression = "a*x + b + c*x^2".into();
+    fisgraf::gui::sync_parameters(&mut f.model).unwrap();
+    let names: Vec<_> = f.model.parameters.iter().map(|p| p.name.as_str()).collect();
+    assert_eq!(names, ["a", "b", "c"]);
+    assert_eq!(f.model.parameters[0].initial, 0.0128);
+
+    let book = app.workbook.clone();
+    app.worker.request(&app.project);
+    app.worker.wait(book);
+    let out = app.worker.latest.as_ref().unwrap();
+    let run = &out.computed.fits[0];
+    let o = run.outcome.as_ref().unwrap();
+    assert_eq!(o.result.method, fisgraf::config::FitMethod::EffectiveVariance);
+    assert!(o.result.converged);
+}
+
+#[test]
+fn results_copy_formats() {
+    let app = computed_app("pendulo");
+    let out = app.worker.latest.as_ref().unwrap();
+    let o = out.computed.fits[0].outcome.as_ref().unwrap();
+    let u = o.uncertainty.as_ref().unwrap();
+    let cfg = &out.project.fits[0];
+    let latex = fisgraf::gui::results::results_latex(cfg, o, u, true);
+    assert!(latex.contains(r"$g$ & $9{,}784 \pm 0{,}022$\,\unit{m/s^2}"), "{latex}");
+    assert!(latex.contains(r"$\chi^2_\nu$"));
+    let text = fisgraf::gui::results::results_text(cfg, o, u, true);
+    assert!(text.starts_with("g = 9,784 ± 0,022 m/s^2"), "{text}");
+}
+
+#[test]
+fn references_tab_add_and_constants() {
+    let mut app = FisGrafApp::default();
+    app.tab = Tab::References;
+    let mut h = harness(app);
+    h.run_steps(3);
+    h.get_by_label("+ Nueva referencia").click();
+    h.run_steps(3);
+    let r = &mut h.state_mut().project.references[0];
+    r.expression = "A*sin(w*x)".into();
+    h.run_steps(3);
+    h.get_by_label("Agregarlas").click();
+    h.run_steps(3);
+    let names: Vec<_> = h.state().project.references[0].constants.iter().map(|c| c.name.clone()).collect();
+    assert_eq!(names, ["A", "w"]);
+}
+
+#[test]
+fn tick_list_parsing() {
+    assert_eq!(fisgraf::gui::parse_tick_list("0,95; 1; 1,05"), Some(vec![0.95, 1.0, 1.05]));
+}
+
+#[test]
+fn export_from_gui_writes_files() {
+    if fisgraf::render::compile::find_program("lualatex").is_none() {
+        return;
+    }
+    let mut app = FisGrafApp::default();
+    app.open_path(&example("imanes"));
+    let dir = std::env::temp_dir().join(format!("fisgraf_gui_export_{}", std::process::id()));
+    app.project.export.output_dir = Some(dir.clone());
+    app.project.export.png = false;
+    assert_eq!(app.export_dir(), Some(dir.clone()));
+    let report = fisgraf::gui::export_project(&app.project, app.workbook.as_deref(), &dir).unwrap();
+    assert!(report.files.iter().any(|f| f.extension().is_some_and(|e| e == "pdf")));
+    std::fs::remove_dir_all(dir).unwrap();
+}
