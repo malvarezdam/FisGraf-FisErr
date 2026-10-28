@@ -21,4 +21,5 @@ statrs = "0.19.1"
 thiserror = "2.0.21"
 
 [dev-dependencies]
+egui_kittest = "0.37"
 rust_xlsxwriter = "0.101.0"

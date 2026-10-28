@@ -92,7 +92,7 @@ impl Workbook {
         Ok((0..rows)
             .map(|r| {
                 (0..cols)
-                    .map(|c| sheet.cells.get_value((r, c)).map_or_else(String::new, |d| d.to_string()))
+                    .map(|c| sheet.cells.get_value((r, c)).map_or_else(String::new, display))
                     .collect()
             })
             .collect())
@@ -141,6 +141,18 @@ impl Workbook {
             _ => CellRef::new(lo.row + i as u32, lo.col),
         };
         format!("{sheet}!{cell}")
+    }
+}
+
+/// Texto de una celda para mostrar. Los decimales binarios se recortan a 12
+/// cifras significativas: 0.30000000000000004 → 0.3 (solo en pantalla).
+fn display(d: &Data) -> String {
+    match d {
+        Data::Float(f) if f.is_finite() => {
+            let rounded: f64 = format!("{f:.11e}").parse().unwrap_or(*f);
+            rounded.to_string()
+        }
+        other => other.to_string(),
     }
 }
 

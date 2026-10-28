@@ -274,6 +274,20 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - Ejemplos: `cargo run --example generar_graficos_ejemplo` crea `examples/proyectos/{imanes,pendulo}.fisgraf.json` y exporta a `examples/salida/` (ignorada en git). `imanes` replica el gráfico de referencia; `pendulo` da g = 9,784 ± 0,022 m/s² con banda, cuadro y residuos.
   - Verificado: las 7 fuentes compilan con LuaLaTeX y pdfLaTeX (`cargo test --test render -- --ignored`, unos 2 min).
   - Para la Fase 8: `export::build_dir()` es una carpeta por proceso. La vista previa debe usar un nombre de archivo propio para no pisar una exportación en curso.
-- [ ] Fase 6 — GUI I
+- [x] Fase 6 — GUI I
+  - `gui::FisGrafApp::draw(ui)` dibuja todo (separado de `eframe::App` para poder probarlo con `egui_kittest`). `fisgraf.exe proyecto.fisgraf.json` abre un proyecto.
+  - API de egui 0.37: `egui::Panel::{top,bottom,left}(…).show(ui, …)`, `CentralPanel::default_margins()`, `MenuBar::new().ui`, `ui.close()`, `ui.scope_id()`, `Id::unique`, `egui::Role` (antes `WidgetType`). Los ids piden `Hash + Debug`.
+  - **Cálculo en segundo plano** (`gui/worker.rs`): agrupa los cambios (250 ms), corre un cálculo a la vez y descarta resultados viejos. Compara contra el proyecto pendiente, el que está en curso y el último calculado, para no recalcular lo mismo.
+  - **Deshacer/rehacer** (`gui/history.rs`) con instantáneas del proyecto. Se confirma cuando no se arrastra ni se escribe. Ctrl+Z/Ctrl+Y, Ctrl+N/O/S/Mayús+S. Mientras se escribe, Ctrl+Z es del campo de texto.
+  - **Cambios sin guardar**: el título muestra ●. Nuevo, Abrir y cerrar la ventana piden confirmación (Guardar / No guardar / Cancelar).
+  - **Pestaña Datos**: abrir y recargar el Excel; elegir hoja; tabla de celdas (hasta 1000×40) con clic, Mayús+clic y clic en la letra de columna. Botones → x, → y, → σx, → σy; "Crear serie con la selección" (x, y, σy) con nombre tomado del encabezado; opción de rango abierto. Resalta los rangos de la serie elegida. Al abrir un proyecto muestra la hoja de la primera serie.
+  - **Pestaña Series**: crear, duplicar, eliminar (también la quita de los ajustes) y reordenar. Editor de leyenda LaTeX con vista en texto, rangos validados (✓/✖), errores en sus 4 formas, color, marcador, topes y unión de puntos. Muestra "N puntos (M filas vacías descartadas)" o el error.
+  - **Vista rápida** (egui_plot): curvas con trazos, bandas, barras de error y marcadores; escala log aproximada con log₁₀; las etiquetas LaTeX pasan a texto con `gui::text::latex_to_plain` (griegas, sub/superíndices, `\frac`, `\unit`).
+  - Lecciones:
+    - egui_plot 0.38 deriva el id de cada elemento de su nombre. Los elementos con el mismo nombre (barras y marcadores de una serie) necesitan `.id(…)` explícito, o no se dibujan.
+    - La fuente de egui no trae σ, χ, →, ✔…; se cargan Segoe UI y Segoe UI Symbol (o DejaVu/Arial Unicode) como respaldo (`gui/fonts.rs`). ⬆ y ＋ no existen ni ahí: se usan ↑ y +.
+    - kittest exige nombre accesible en los ComboBox: `widgets::accessible`.
+    - Los números de la tabla se muestran con 12 cifras significativas (`0.30000000000000004` → `0.3`).
+  - Verificado a mano con capturas de pantalla (imanes y péndulo) y con 6 pruebas de kittest (`tests/gui.rs`).
 - [ ] Fase 7 — GUI II
 - [ ] Fase 8 — Vista previa LaTeX y pulido
