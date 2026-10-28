@@ -24,7 +24,7 @@ pub use figure::{
     ResultsBoxConfig,
 };
 pub use fit::{
-    BootstrapKind, CovarianceMode, FitConfig, FitMethod, FitSettings, ModelConfig, ParameterConfig,
+    BootstrapKind, CovarianceMode, FitConfig, FitMethod, FitSettings, ModelConfig, ParameterConfig, ResultsBoxItems,
     UncertaintyConfig, UncertaintyMethod,
 };
 pub use propagation::{Correlation, InputDistribution, PropagationConfig, PropagationMethod, PropagationVariable};

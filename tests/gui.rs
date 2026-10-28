@@ -307,3 +307,26 @@ fn propagation_tab_end_to_end() {
     h.get_by_label("Copiar fórmula de propagación");
     h.get_by_label_contains("Presupuesto de incertidumbre");
 }
+
+#[test]
+fn test_data_projects_are_bundled_and_compute() {
+    let found = fisgraf::gui::bundled_projects(&["datos_de_prueba", "proyectos"]);
+    assert_eq!(found.len(), 8, "{found:?}");
+    assert_eq!(found[0].0, "01 caida libre.fisgraf.json".trim_end_matches(".fisgraf.json"));
+    for (name, path) in found {
+        let mut app = FisGrafApp::default();
+        app.open_path(&path);
+        let book = app.workbook.clone();
+        app.worker.request(&app.project);
+        app.worker.wait(book);
+        let out = app.worker.latest.as_ref().unwrap();
+        assert!(out.scene.warnings.is_empty(), "{name}: {:?}", out.scene.warnings);
+        for run in &out.computed.fits {
+            let o = run.outcome.as_ref().unwrap_or_else(|e| panic!("{name}: {e}"));
+            assert!(o.result.converged, "{name}");
+        }
+        for p in &app.project.propagations {
+            fisgraf::propagation::propagate(p).unwrap_or_else(|e| panic!("{name}: {e}"));
+        }
+    }
+}

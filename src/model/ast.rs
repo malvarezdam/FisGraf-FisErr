@@ -175,6 +175,22 @@ impl Expr {
         }
     }
 
+    /// Reemplaza los nombres para los que `f` devuelve una expresión.
+    pub fn substitute(&self, f: &dyn Fn(&str) -> Option<Expr>) -> Expr {
+        let s = |e: &Expr| Box::new(e.substitute(f));
+        match self {
+            Expr::Var(n) => f(n).unwrap_or_else(|| self.clone()),
+            Expr::Num(_) | Expr::Pi | Expr::E => self.clone(),
+            Expr::Neg(a) => Expr::Neg(s(a)),
+            Expr::Add(a, b) => Expr::Add(s(a), s(b)),
+            Expr::Sub(a, b) => Expr::Sub(s(a), s(b)),
+            Expr::Mul(a, b) => Expr::Mul(s(a), s(b)),
+            Expr::Div(a, b) => Expr::Div(s(a), s(b)),
+            Expr::Pow(a, b) => Expr::Pow(s(a), s(b)),
+            Expr::Call(func, a) => Expr::Call(*func, s(a)),
+        }
+    }
+
     /// Evalúa buscando cada nombre con `lookup` (NaN si no existe). Más lenta
     /// que un [`crate::model::Model`] compilado; útil para expresiones sueltas.
     pub fn eval_with(&self, lookup: &dyn Fn(&str) -> Option<f64>) -> f64 {

@@ -1,0 +1,208 @@
+{
+  "format_version": 1,
+  "excel_path": "..\\07_efecto_fotoelectrico.xlsx",
+  "series": [
+    {
+      "id": 1,
+      "label": "Líneas del Hg",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "Fotoelectrico!A2:A",
+      "y_range": "Fotoelectrico!B2:B",
+      "x_error": "None",
+      "y_error": {
+        "Range": "Fotoelectrico!C2:C"
+      },
+      "color": "#9467BD",
+      "marker": "Circle",
+      "marker_size_pt": 2.0,
+      "connect_points": null,
+      "error_cap_pt": 2.0
+    }
+  ],
+  "fits": [
+    {
+      "id": 2,
+      "enabled": true,
+      "series_ids": [
+        1
+      ],
+      "label": "Ajuste lineal",
+      "show_in_legend": true,
+      "model": {
+        "expression": "a*nu - b",
+        "variable": "nu",
+        "parameters": [
+          {
+            "name": "a",
+            "latex": "h/e",
+            "unit": "V",
+            "initial": 0.4,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          },
+          {
+            "name": "b",
+            "latex": "W/e",
+            "unit": "V",
+            "initial": 2.0,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          }
+        ],
+        "latex_override": ""
+      },
+      "method": "Auto",
+      "settings": {
+        "max_iterations": 500,
+        "tolerance": 1e-10,
+        "use_weights": true
+      },
+      "uncertainty": {
+        "method": "Covariance",
+        "covariance_mode": "ScaledByReducedChi2",
+        "bootstrap_kind": "Residuals",
+        "samples": 2000,
+        "confidence_level": 0.95,
+        "seed": 42
+      },
+      "line": {
+        "color": null,
+        "width_pt": 1.2,
+        "dash": "Solid",
+        "opacity": 1.0
+      },
+      "show_band": true,
+      "band_opacity": 0.2,
+      "domain": null,
+      "samples": 200,
+      "show_in_results_box": true,
+      "results": {
+        "title": false,
+        "equation": true,
+        "equation_lhs": "V_0",
+        "parameters": true,
+        "r_squared": true,
+        "adj_r_squared": true,
+        "chi2": false,
+        "chi2_red": true,
+        "p_value": true,
+        "residual_std": false,
+        "points": false
+      },
+      "legend_r2": false
+    }
+  ],
+  "references": [],
+  "propagations": [
+    {
+      "id": 3,
+      "name": "h",
+      "latex": "",
+      "unit": "J.s",
+      "expression": "a*e0*1e-14",
+      "variables": [
+        {
+          "name": "a",
+          "value": 0.4136,
+          "sigma": 0.006,
+          "constant": false,
+          "distribution": "Normal",
+          "latex": "h/e",
+          "unit": "V/(10^14 Hz)"
+        },
+        {
+          "name": "e0",
+          "value": 1.602176634e-19,
+          "sigma": 0.0,
+          "constant": true,
+          "distribution": "Normal",
+          "latex": "e",
+          "unit": "C"
+        }
+      ],
+      "correlations": [],
+      "method": "Linear",
+      "samples": 200000,
+      "seed": 42,
+      "confidence_level": 0.95
+    }
+  ],
+  "x_axis": {
+    "label": "Frecuencia $\\nu$ [$10^{14}$\\,\\unit{Hz}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 1,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "y_axis": {
+    "label": "Potencial de frenado $V_0$ [\\unit{V}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 1,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "figure": {
+    "title": "",
+    "width_cm": 10.0,
+    "aspect": "R4x3",
+    "font": "LatinModern",
+    "font_size_pt": 10.0,
+    "grid": {
+      "major": true,
+      "minor": false,
+      "color": "#7F7F7F",
+      "opacity": 0.3
+    },
+    "legend": {
+      "show": true,
+      "position": "SouthEast",
+      "columns": 1,
+      "frame": true,
+      "fill_opacity": 1.0
+    },
+    "results_box": {
+      "show": true,
+      "position": "NorthWest"
+    },
+    "residuals_panel": false,
+    "engine": "LuaLatex",
+    "extra_preamble": ""
+  },
+  "export": {
+    "output_dir": null,
+    "file_stem": "07_efecto_fotoelectrico",
+    "pdf": true,
+    "png": true,
+    "png_dpi": 300,
+    "svg": false,
+    "tex_standalone": false,
+    "tex_snippet": false
+  }
+}

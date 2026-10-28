@@ -346,3 +346,14 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
     - `Expr::eval_with` evalúa por nombre.
     - Nueva simplificación (xᵃ)ⁿ = xᵃⁿ.
     - `render::compile::compile_pdf` serializa las compilaciones con un mutex: dos LuaLaTeX simultáneos compiten por la caché de fuentes.
+- [x] **Cuadro de resultados, datos de prueba, logo y ejecutable** (pedido del usuario)
+  - `FitConfig.results: ResultsBoxItems` permite elegir el contenido del cuadro: título, ecuación ajustada (con lado izquierdo configurable), parámetros, R², R² ajustado, χ², χ²_red, p, s, n y ν. `FitConfig.legend_r2` agrega R² a la leyenda.
+    - La ecuación ajustada se arma reemplazando cada parámetro por su valor redondeado (`Expr::substitute`) y simplificando.
+    - `pipeline::r2_latex` usa los decimales justos para que se vea la diferencia con 1.
+    - Con varias series, el título del cuadro incluye el nombre de la serie.
+    - Controles en la pestaña Ajustes.
+  - `datos_de_prueba/`: 8 experimentos simulados con ley física más ruido gaussiano de semilla fija (`cargo run --example generar_datos_prueba`). Cada uno tiene su Excel (con hoja «Notas» y los valores reales), su proyecto en `proyectos/` con opciones distintas y su gráfico esperado en `graficos/`. Guía en `datos_de_prueba/README.md`. Menú **Archivo → Abrir datos de prueba** (`gui::bundled_projects` busca junto al ejecutable y en la carpeta del código).
+  - Fira Sans: con LuaLaTeX se usa `unicode-math` + Fira Math; con pdfLaTeX, `mathastext`. Antes los números de los ejes y las unidades salían en serif.
+  - Logo: `assets/logo.tex` (TikZ) → `assets/logo.png` y `assets/fisgraf.ico` (`cargo run --example generar_logo`; el crate `image` ahora tiene la característica `ico`). Ícono de la ventana con `include_bytes!` e ícono del `.exe` con `build.rs` y `winresource`.
+  - Ejecutable: `crear_ejecutable.bat` compila en release y copia `FisGraf.exe` a la raíz (ignorado en git).
+  - Arreglos: el aviso "Parámetros en la ecuación" ya no salta por diferencias de orden; los campos numéricos muestran la forma corta del número.

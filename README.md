@@ -19,17 +19,15 @@ Paquetes LaTeX que se usan: `pgfplots`, `siunitx`, `amsmath`. Según la fuente e
 
 ## 2. Abrir el programa
 
-```bash
-cargo run --release
-```
+**Con el ejecutable:** haz doble clic en **`FisGraf.exe`**, en esta carpeta. Si no está, o si cambiaste el código, haz doble clic en **`crear_ejecutable.bat`**: compila la versión optimizada y deja `FisGraf.exe` listo. Para tener un acceso directo, haz clic derecho sobre `FisGraf.exe` → *Enviar a* → *Escritorio*. También puedes asociarle los archivos `.fisgraf.json` para abrirlos con doble clic.
 
-Para abrir directamente un proyecto:
+**Desde la terminal:**
 
 ```bash
-cargo run --release -- examples/proyectos/pendulo.fisgraf.json
+cargo run --release -- datos_de_prueba/proyectos/01_caida_libre.fisgraf.json
 ```
 
-El ejecutable queda en `target/release/fisgraf.exe`. Puedes copiarlo donde quieras y asociarle los archivos `.fisgraf.json`.
+**Para probar:** en **Archivo → Abrir datos de prueba** hay ocho experimentos con mediciones simuladas (caída libre, Ohm, RC, oscilador, enfriamiento, resonancia, efecto fotoeléctrico y Boyle). La guía está en [datos_de_prueba/README.md](datos_de_prueba/README.md).
 
 ## 3. Flujo de trabajo
 
@@ -40,7 +38,12 @@ La ventana tiene las **pestañas de configuración** a la izquierda, la **vista 
    - **Crear serie con la selección** crea una serie a partir de 2 columnas (x, y) o 3 (x, y, σy), y toma el nombre del encabezado.
    - **Hasta el final de la columna** usa rangos como `B2:B`, que crecen si agregas filas.
 2. **Series.** Cada serie es un conjunto de mediciones con su leyenda (LaTeX), color, marcador y barras de error. El error de x e y puede ser una columna del Excel, una constante, un porcentaje o la resolución del instrumento (σ = resolución/2√3).
-3. **Ajustes.** Escribe la ecuación teórica, indica la variable medida y pulsa **Actualizar parámetros**. Para cada parámetro defines valor inicial, si queda fijo, límites, símbolo LaTeX y unidad. Después eliges el método de ajuste, el de incertidumbre y el estilo de la curva (banda de confianza incluida).
+3. **Ajustes.** Escribe la ecuación teórica, indica la variable medida y pulsa **Actualizar parámetros**. Para cada parámetro defines valor inicial, si queda fijo, límites, símbolo LaTeX y unidad. Después eliges el método de ajuste, el de incertidumbre y el estilo de la curva (banda de confianza incluida). En **Cuadro de resultados del gráfico** eliges qué escribir en el gráfico:
+   - la **ecuación con los valores ajustados**, como la línea de tendencia de Excel: `y = 0,13 t + 4,935 t²`
+   - los parámetros con su error
+   - **R²**, R² ajustado, χ², χ²_red, p-valor, s de los residuos, n y ν, y un título
+
+   **Agregar R² a la leyenda** escribe «(R² = 0,9998)» junto al nombre del ajuste.
 4. **Referencias.** Curvas teóricas fijas, sin ajuste, para comparar. Los nombres sin valor se agregan como constantes.
 5. **Ejes.** Título, límites manuales, escala lineal o logarítmica, marcas (automáticas, cada cierta distancia o en posiciones exactas `1; 2,5; 4`) y formato de los números (decimal o científico, decimales, coma decimal, separador de miles, factor ×10ⁿ).
 6. **Estilo.** Tamaño y proporción (4:3, 16:9, 9:16, áurea o personalizada), fuente y tamaño de letra, motor LaTeX, cuadrícula, leyenda, cuadro de resultados, panel de residuos y preámbulo extra.

@@ -1,0 +1,230 @@
+{
+  "format_version": 1,
+  "excel_path": "..\\04_oscilador_amortiguado.xlsx",
+  "series": [
+    {
+      "id": 1,
+      "label": "Sensor de movimiento",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "Oscilador!A2:A",
+      "y_range": "Oscilador!B2:B",
+      "x_error": "None",
+      "y_error": {
+        "Constant": 0.08
+      },
+      "color": "#1F77B4",
+      "marker": "Circle",
+      "marker_size_pt": 1.5,
+      "connect_points": null,
+      "error_cap_pt": 1.0
+    }
+  ],
+  "fits": [
+    {
+      "id": 2,
+      "enabled": true,
+      "series_ids": [
+        1
+      ],
+      "label": "Ajuste",
+      "show_in_legend": true,
+      "model": {
+        "expression": "A*exp(-gamma*t)*cos(w*t + phi)",
+        "variable": "t",
+        "parameters": [
+          {
+            "name": "A",
+            "latex": "",
+            "unit": "cm",
+            "initial": 3.5,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          },
+          {
+            "name": "gamma",
+            "latex": "",
+            "unit": "1/s",
+            "initial": 0.2,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          },
+          {
+            "name": "w",
+            "latex": "\\omega",
+            "unit": "rad/s",
+            "initial": 3.0,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          },
+          {
+            "name": "phi",
+            "latex": "",
+            "unit": "rad",
+            "initial": 0.2,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          }
+        ],
+        "latex_override": ""
+      },
+      "method": "NelderMead",
+      "settings": {
+        "max_iterations": 500,
+        "tolerance": 1e-10,
+        "use_weights": true
+      },
+      "uncertainty": {
+        "method": "Covariance",
+        "covariance_mode": "ScaledByReducedChi2",
+        "bootstrap_kind": "Residuals",
+        "samples": 2000,
+        "confidence_level": 0.95,
+        "seed": 42
+      },
+      "line": {
+        "color": null,
+        "width_pt": 1.2,
+        "dash": "Solid",
+        "opacity": 1.0
+      },
+      "show_band": false,
+      "band_opacity": 0.2,
+      "domain": null,
+      "samples": 600,
+      "show_in_results_box": true,
+      "results": {
+        "title": false,
+        "equation": false,
+        "equation_lhs": "y",
+        "parameters": true,
+        "r_squared": false,
+        "adj_r_squared": false,
+        "chi2": false,
+        "chi2_red": true,
+        "p_value": false,
+        "residual_std": false,
+        "points": true
+      },
+      "legend_r2": false
+    }
+  ],
+  "references": [
+    {
+      "id": 3,
+      "enabled": true,
+      "label": "Envolvente $\\pm A e^{-\\gamma t}$",
+      "show_in_legend": true,
+      "expression": "4*exp(-0.25*t)",
+      "variable": "t",
+      "constants": [],
+      "latex_override": "",
+      "domain": null,
+      "samples": 200,
+      "line": {
+        "color": "#7F7F7F",
+        "width_pt": 1.0,
+        "dash": "Dotted",
+        "opacity": 1.0
+      }
+    },
+    {
+      "id": 4,
+      "enabled": true,
+      "label": "",
+      "show_in_legend": false,
+      "expression": "-4*exp(-0.25*t)",
+      "variable": "t",
+      "constants": [],
+      "latex_override": "",
+      "domain": null,
+      "samples": 200,
+      "line": {
+        "color": "#7F7F7F",
+        "width_pt": 1.0,
+        "dash": "Dotted",
+        "opacity": 1.0
+      }
+    }
+  ],
+  "propagations": [],
+  "x_axis": {
+    "label": "Tiempo $t$ [\\unit{s}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 1,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 0,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "y_axis": {
+    "label": "Posición $x$ [\\unit{cm}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 0,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "figure": {
+    "title": "",
+    "width_cm": 14.0,
+    "aspect": "R16x9",
+    "font": "LatinModern",
+    "font_size_pt": 10.0,
+    "grid": {
+      "major": true,
+      "minor": true,
+      "color": "#7F7F7F",
+      "opacity": 0.3
+    },
+    "legend": {
+      "show": true,
+      "position": "NorthEast",
+      "columns": 1,
+      "frame": true,
+      "fill_opacity": 1.0
+    },
+    "results_box": {
+      "show": true,
+      "position": "SouthEast"
+    },
+    "residuals_panel": false,
+    "engine": "LuaLatex",
+    "extra_preamble": ""
+  },
+  "export": {
+    "output_dir": null,
+    "file_stem": "04_oscilador_amortiguado",
+    "pdf": true,
+    "png": true,
+    "png_dpi": 300,
+    "svg": false,
+    "tex_standalone": false,
+    "tex_snippet": false
+  }
+}

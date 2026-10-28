@@ -342,20 +342,12 @@ impl FisGrafApp {
                     self.request(Pending::Open(None));
                     ui.close();
                 }
-                let examples = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples").join("proyectos");
-                if examples.is_dir() {
-                    ui.menu_button("Abrir ejemplo", |ui| {
-                        let suffix = format!(".{PROJECT_EXTENSION}");
-                        let mut found: Vec<(String, PathBuf)> = std::fs::read_dir(&examples)
-                            .into_iter()
-                            .flatten()
-                            .flatten()
-                            .filter_map(|e| {
-                                let name = e.file_name().to_string_lossy().strip_suffix(&suffix)?.to_owned();
-                                Some((name, e.path()))
-                            })
-                            .collect();
-                        found.sort();
+                for (title, folder) in [("Abrir ejemplo", ["examples", "proyectos"]), ("Abrir datos de prueba", ["datos_de_prueba", "proyectos"])] {
+                    let found = bundled_projects(&folder);
+                    if found.is_empty() {
+                        continue;
+                    }
+                    ui.menu_button(title, |ui| {
                         for (name, p) in found {
                             if ui.button(name).clicked() {
                                 self.request(Pending::Open(Some(p)));
@@ -557,6 +549,27 @@ impl FisGrafApp {
             self.title = title;
         }
     }
+}
+
+/// Proyectos incluidos con FisGraf en `folder` (p. ej. `datos_de_prueba/proyectos`).
+/// Se buscan junto al ejecutable y en la carpeta del código fuente.
+pub fn bundled_projects(folder: &[&str]) -> Vec<(String, PathBuf)> {
+    let exe_dir = std::env::current_exe().ok().and_then(|e| e.parent().map(Path::to_path_buf));
+    let roots = exe_dir.into_iter().chain(std::iter::once(PathBuf::from(env!("CARGO_MANIFEST_DIR"))));
+    let suffix = format!(".{PROJECT_EXTENSION}");
+    for root in roots {
+        let dir = folder.iter().fold(root, |d, part| d.join(part));
+        let Ok(entries) = std::fs::read_dir(&dir) else { continue };
+        let mut found: Vec<(String, PathBuf)> = entries
+            .flatten()
+            .filter_map(|e| Some((e.file_name().to_string_lossy().strip_suffix(&suffix)?.replace('_', " "), e.path())))
+            .collect();
+        if !found.is_empty() {
+            found.sort();
+            return found;
+        }
+    }
+    Vec::new()
 }
 
 impl eframe::App for FisGrafApp {

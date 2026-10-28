@@ -1,0 +1,188 @@
+{
+  "format_version": 1,
+  "excel_path": "..\\02_ley_de_ohm.xlsx",
+  "series": [
+    {
+      "id": 1,
+      "label": "$R_1$",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "Ohm!A2:A",
+      "y_range": "Ohm!B2:B",
+      "x_error": {
+        "Constant": 0.1
+      },
+      "y_error": {
+        "Range": "Ohm!C2:C"
+      },
+      "color": "#1F77B4",
+      "marker": "Square",
+      "marker_size_pt": 2.0,
+      "connect_points": null,
+      "error_cap_pt": 2.0
+    },
+    {
+      "id": 2,
+      "label": "$R_2$",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "Ohm!A2:A",
+      "y_range": "Ohm!D2:D",
+      "x_error": {
+        "Constant": 0.1
+      },
+      "y_error": {
+        "Range": "Ohm!E2:E"
+      },
+      "color": "#D62728",
+      "marker": "Triangle",
+      "marker_size_pt": 2.0,
+      "connect_points": null,
+      "error_cap_pt": 2.0
+    }
+  ],
+  "fits": [
+    {
+      "id": 3,
+      "enabled": true,
+      "series_ids": [
+        1,
+        2
+      ],
+      "label": "$V = RI$",
+      "show_in_legend": true,
+      "model": {
+        "expression": "R*I/1000",
+        "variable": "I",
+        "parameters": [
+          {
+            "name": "R",
+            "latex": "",
+            "unit": "\\ohm",
+            "initial": 150.0,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          }
+        ],
+        "latex_override": ""
+      },
+      "method": "Auto",
+      "settings": {
+        "max_iterations": 500,
+        "tolerance": 1e-10,
+        "use_weights": true
+      },
+      "uncertainty": {
+        "method": "Covariance",
+        "covariance_mode": "ScaledByReducedChi2",
+        "bootstrap_kind": "Residuals",
+        "samples": 2000,
+        "confidence_level": 0.95,
+        "seed": 42
+      },
+      "line": {
+        "color": null,
+        "width_pt": 1.2,
+        "dash": "Dashed",
+        "opacity": 1.0
+      },
+      "show_band": false,
+      "band_opacity": 0.2,
+      "domain": null,
+      "samples": 200,
+      "show_in_results_box": true,
+      "results": {
+        "title": true,
+        "equation": false,
+        "equation_lhs": "y",
+        "parameters": true,
+        "r_squared": true,
+        "adj_r_squared": false,
+        "chi2": false,
+        "chi2_red": false,
+        "p_value": false,
+        "residual_std": false,
+        "points": false
+      },
+      "legend_r2": true
+    }
+  ],
+  "references": [],
+  "propagations": [],
+  "x_axis": {
+    "label": "Corriente $I$ [\\unit{mA}]",
+    "min": 0.0,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 0,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "y_axis": {
+    "label": "Tensión $V$ [\\unit{V}]",
+    "min": 0.0,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 1,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "figure": {
+    "title": "",
+    "width_cm": 10.0,
+    "aspect": "R4x3",
+    "font": "Times",
+    "font_size_pt": 10.0,
+    "grid": {
+      "major": true,
+      "minor": false,
+      "color": "#7F7F7F",
+      "opacity": 0.3
+    },
+    "legend": {
+      "show": true,
+      "position": "Below",
+      "columns": 2,
+      "frame": true,
+      "fill_opacity": 1.0
+    },
+    "results_box": {
+      "show": true,
+      "position": "NorthWest"
+    },
+    "residuals_panel": false,
+    "engine": "LuaLatex",
+    "extra_preamble": ""
+  },
+  "export": {
+    "output_dir": null,
+    "file_stem": "02_ley_de_ohm",
+    "pdf": true,
+    "png": true,
+    "png_dpi": 300,
+    "svg": false,
+    "tex_standalone": false,
+    "tex_snippet": false
+  }
+}

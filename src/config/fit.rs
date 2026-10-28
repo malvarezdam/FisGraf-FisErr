@@ -187,8 +187,53 @@ pub struct FitConfig {
     /// Intervalo donde se dibuja la curva. `None` = rango de los datos.
     pub domain: Option<(f64, f64)>,
     pub samples: u32,
-    /// Incluye los parámetros en el cuadro de resultados del gráfico.
+    /// Incluye este ajuste en el cuadro de resultados del gráfico.
     pub show_in_results_box: bool,
+    /// Qué se escribe en el cuadro de resultados.
+    pub results: ResultsBoxItems,
+    /// Agrega «(R² = …)» al texto de la leyenda.
+    pub legend_r2: bool,
+}
+
+/// Contenido del cuadro de resultados de un ajuste.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ResultsBoxItems {
+    /// Título con la leyenda del ajuste (útil con varios ajustes).
+    pub title: bool,
+    /// Ecuación con los valores ajustados, p. ej. `y = 2,31 x + 0,12`.
+    pub equation: bool,
+    /// Lado izquierdo de la ecuación, en LaTeX.
+    pub equation_lhs: String,
+    /// Cada parámetro libre con su incertidumbre.
+    pub parameters: bool,
+    pub r_squared: bool,
+    pub adj_r_squared: bool,
+    pub chi2: bool,
+    pub chi2_red: bool,
+    pub p_value: bool,
+    /// Desviación estándar de los residuos.
+    pub residual_std: bool,
+    /// Número de puntos y grados de libertad.
+    pub points: bool,
+}
+
+impl Default for ResultsBoxItems {
+    fn default() -> Self {
+        Self {
+            title: false,
+            equation: false,
+            equation_lhs: "y".into(),
+            parameters: true,
+            r_squared: false,
+            adj_r_squared: false,
+            chi2: false,
+            chi2_red: true,
+            p_value: false,
+            residual_std: false,
+            points: false,
+        }
+    }
 }
 
 impl Default for FitConfig {
@@ -209,6 +254,8 @@ impl Default for FitConfig {
             domain: None,
             samples: 200,
             show_in_results_box: false,
+            results: ResultsBoxItems::default(),
+            legend_r2: false,
         }
     }
 }

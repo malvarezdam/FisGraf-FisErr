@@ -47,7 +47,11 @@ fn preamble(project: &ProjectConfig, scene: &Scene, warnings: &mut Vec<String>) 
         FontChoice::Palatino => "\\usepackage{newpxtext,newpxmath}\n".into(),
         FontChoice::Libertine => "\\usepackage{libertine}\n\\usepackage[libertine]{newtxmath}\n".into(),
         FontChoice::Charter => "\\usepackage{XCharter}\n\\usepackage[xcharter]{newtxmath}\n".into(),
-        FontChoice::FiraSans => "\\usepackage[sfdefault]{FiraSans}\n\\usepackage{newtxsf}\n".into(),
+        // Fira Sans con su fuente matemática (Fira Math): números, unidades y
+        // letras griegas del gráfico quedan todos en sans-serif.
+        FontChoice::FiraSans if lua => "\\usepackage{unicode-math}\n\\setmainfont{Fira Sans}[Numbers=Lining]\n\\setsansfont{Fira Sans}[Numbers=Lining]\n\\setmathfont{Fira Math}\n".into(),
+        // pdfLaTeX no tiene Fira Math: mathastext usa la fuente del texto en las matemáticas.
+        FontChoice::FiraSans => "\\usepackage[sfdefault,lining]{FiraSans}\n\\usepackage[italic]{mathastext}\n".into(),
         FontChoice::System(name) if lua => format!("\\usepackage{{fontspec}}\n\\setmainfont{{{name}}}\n"),
         FontChoice::System(name) => {
             warnings.push(format!("la fuente del sistema «{name}» requiere LuaLaTeX: se usa Latin Modern"));

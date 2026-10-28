@@ -1,0 +1,177 @@
+{
+  "format_version": 1,
+  "excel_path": "..\\01_caida_libre.xlsx",
+  "series": [
+    {
+      "id": 1,
+      "label": "Fotopuertas",
+      "show_in_legend": true,
+      "visible": true,
+      "x_range": "CaidaLibre!A2:A",
+      "y_range": "CaidaLibre!B2:B",
+      "x_error": {
+        "Range": "CaidaLibre!C2:C"
+      },
+      "y_error": {
+        "Range": "CaidaLibre!D2:D"
+      },
+      "color": "#1F77B4",
+      "marker": "Circle",
+      "marker_size_pt": 2.0,
+      "connect_points": null,
+      "error_cap_pt": 2.0
+    }
+  ],
+  "fits": [
+    {
+      "id": 2,
+      "enabled": true,
+      "series_ids": [
+        1
+      ],
+      "label": "$y = v_0 t + \\tfrac{1}{2} g t^2$",
+      "show_in_legend": true,
+      "model": {
+        "expression": "v0*t + 0.5*g*t^2",
+        "variable": "t",
+        "parameters": [
+          {
+            "name": "v0",
+            "latex": "v_0",
+            "unit": "m/s",
+            "initial": 0.0,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          },
+          {
+            "name": "g",
+            "latex": "",
+            "unit": "m/s^2",
+            "initial": 9.0,
+            "lower": null,
+            "upper": null,
+            "fixed": false
+          }
+        ],
+        "latex_override": ""
+      },
+      "method": "Auto",
+      "settings": {
+        "max_iterations": 500,
+        "tolerance": 1e-10,
+        "use_weights": true
+      },
+      "uncertainty": {
+        "method": "Covariance",
+        "covariance_mode": "ScaledByReducedChi2",
+        "bootstrap_kind": "Residuals",
+        "samples": 2000,
+        "confidence_level": 0.95,
+        "seed": 42
+      },
+      "line": {
+        "color": null,
+        "width_pt": 1.2,
+        "dash": "Solid",
+        "opacity": 1.0
+      },
+      "show_band": false,
+      "band_opacity": 0.2,
+      "domain": null,
+      "samples": 200,
+      "show_in_results_box": true,
+      "results": {
+        "title": false,
+        "equation": true,
+        "equation_lhs": "y",
+        "parameters": true,
+        "r_squared": true,
+        "adj_r_squared": false,
+        "chi2": false,
+        "chi2_red": true,
+        "p_value": false,
+        "residual_std": false,
+        "points": false
+      },
+      "legend_r2": true
+    }
+  ],
+  "references": [],
+  "propagations": [],
+  "x_axis": {
+    "label": "Tiempo $t$ [\\unit{s}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 2,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "y_axis": {
+    "label": "Distancia $y$ [\\unit{m}]",
+    "min": null,
+    "max": null,
+    "scale": "Linear",
+    "ticks": {
+      "spacing": "Auto",
+      "minor_per_major": 0,
+      "direction": "In"
+    },
+    "number_format": {
+      "notation": "Fixed",
+      "decimals": 2,
+      "fixed_zerofill": true,
+      "decimal_comma": true,
+      "thousands_separator": false,
+      "common_factor": false
+    }
+  },
+  "figure": {
+    "title": "",
+    "width_cm": 10.0,
+    "aspect": "R4x3",
+    "font": "LatinModern",
+    "font_size_pt": 10.0,
+    "grid": {
+      "major": true,
+      "minor": false,
+      "color": "#7F7F7F",
+      "opacity": 0.3
+    },
+    "legend": {
+      "show": true,
+      "position": "SouthEast",
+      "columns": 1,
+      "frame": true,
+      "fill_opacity": 1.0
+    },
+    "results_box": {
+      "show": true,
+      "position": "NorthWest"
+    },
+    "residuals_panel": true,
+    "engine": "LuaLatex",
+    "extra_preamble": ""
+  },
+  "export": {
+    "output_dir": null,
+    "file_stem": "01_caida_libre",
+    "pdf": true,
+    "png": true,
+    "png_dpi": 300,
+    "svg": false,
+    "tex_standalone": false,
+    "tex_snippet": false
+  }
+}

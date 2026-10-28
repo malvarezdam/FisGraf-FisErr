@@ -239,3 +239,40 @@ fn propagation_latex_compiles() {
     compile_pdf(&doc, LatexEngine::PdfLatex, &dir, "p", COMPILE_TIMEOUT).unwrap();
     std::fs::remove_dir_all(&dir).unwrap();
 }
+
+/// Opciones del cuadro de resultados: ecuación ajustada, R² y demás.
+#[test]
+fn results_box_items() {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("examples/proyectos/hooke.fisgraf.json");
+    let mut p = ProjectConfig::load(&path).unwrap();
+    let r = &mut p.fits[0].results;
+    r.equation = true;
+    r.equation_lhs = r"\Delta x".into();
+    r.r_squared = true;
+    r.adj_r_squared = true;
+    r.chi2 = true;
+    r.p_value = true;
+    r.residual_std = true;
+    r.points = true;
+    p.fits[0].legend_r2 = true;
+    let book = Workbook::open(p.excel_path.as_ref().unwrap()).unwrap();
+    let scene = build_scene(&p, &compute(&p, Some(&book)));
+    let lines = scene.results_box.join("\n");
+    for needle in [r"$\Delta x = ", "39{,}49", "$R^2 = 0{,}99", r"$R^2_{\mathrm{aj}} = ", r"$\chi^2 = ", r"$\chi^2_\nu = ", "$p = ", "$s = ", r"$n = 5$, $\nu = 4$"] {
+        assert!(lines.contains(needle), "falta «{needle}» en:\n{lines}");
+    }
+    assert!(scene.curves[0].legend.as_ref().unwrap().contains("($R^2 = "));
+    if has_latex(LatexEngine::LuaLatex) {
+        let dir = temp_dir("cuadro");
+        compile_pdf(&generate(&p, &scene).full, LatexEngine::LuaLatex, &dir, "c", COMPILE_TIMEOUT).unwrap();
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+}
+
+#[test]
+fn r2_shows_enough_decimals() {
+    use fisgraf::pipeline::r2_latex;
+    assert_eq!(r2_latex(0.95, false), "0.950");
+    assert_eq!(r2_latex(0.9987, true), "0{,}9987");
+    assert_eq!(r2_latex(0.99983, false), "0.99983");
+}

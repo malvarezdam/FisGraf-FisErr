@@ -130,8 +130,9 @@ impl FisGrafApp {
         let series: Vec<(u32, String, crate::config::Rgb)> =
             self.project.series.iter().map(|s| (s.id, latex_to_plain(&s.label), s.color)).collect();
         let comma = crate::pipeline::decimal_comma(&self.project);
+        let box_visible = self.project.figure.results_box.show;
         let Some(f) = self.project.fits.iter_mut().find(|f| f.id == id) else { return };
-        fit_editor(ui, f, &series, comma);
+        fit_editor(ui, f, &series, comma, box_visible);
 
         ui.separator();
         ui.strong("Resultado");
@@ -150,7 +151,7 @@ impl FisGrafApp {
     }
 }
 
-fn fit_editor(ui: &mut Ui, f: &mut FitConfig, series: &[(u32, String, crate::config::Rgb)], comma: bool) {
+fn fit_editor(ui: &mut Ui, f: &mut FitConfig, series: &[(u32, String, crate::config::Rgb)], comma: bool, box_visible: bool) {
     let id = f.id;
     egui::Grid::new(("ajuste", id)).num_columns(2).spacing([10.0, 6.0]).show(ui, |ui| {
         ui.label("Leyenda (LaTeX)");
@@ -199,7 +200,9 @@ fn fit_editor(ui: &mut Ui, f: &mut FitConfig, series: &[(u32, String, crate::con
     });
 
     let missing = suggest_parameters(&f.model.expression, &f.model.variable, &[]);
-    let names: Vec<&str> = f.model.parameters.iter().map(|p| p.name.as_str()).collect();
+    // Se compara sin importar el orden: el usuario puede ordenar los parámetros como quiera.
+    let mut names: Vec<&str> = f.model.parameters.iter().map(|p| p.name.as_str()).collect();
+    names.sort_unstable();
     match &missing {
         Ok(found) if found.iter().map(String::as_str).ne(names.iter().copied()) => {
             ui.horizontal_wrapped(|ui| {
@@ -336,5 +339,35 @@ fn fit_editor(ui: &mut Ui, f: &mut FitConfig, series: &[(u32, String, crate::con
         ui.label("Puntos de la curva");
         ui.add(egui::DragValue::new(&mut f.samples).range(2..=5000));
     });
-    ui.checkbox(&mut f.show_in_results_box, "Mostrar parámetros en el cuadro de resultados del gráfico");
+    ui.checkbox(&mut f.legend_r2, "Agregar R² a la leyenda");
+
+    ui.add_space(6.0);
+    ui.strong("Cuadro de resultados del gráfico");
+    ui.checkbox(&mut f.show_in_results_box, "Incluir este ajuste en el cuadro");
+    if f.show_in_results_box {
+        let r = &mut f.results;
+        ui.indent(("cuadro", id), |ui| {
+            ui.horizontal(|ui| {
+                ui.checkbox(&mut r.equation, "Ecuación con los valores ajustados");
+                if r.equation {
+                    ui.label("lado izquierdo");
+                    ui.add(egui::TextEdit::singleline(&mut r.equation_lhs).hint_text("y").desired_width(60.0));
+                }
+            });
+            ui.checkbox(&mut r.parameters, "Parámetros con su error");
+            ui.horizontal_wrapped(|ui| {
+                ui.checkbox(&mut r.r_squared, "R²");
+                ui.checkbox(&mut r.adj_r_squared, "R² ajustado");
+                ui.checkbox(&mut r.chi2_red, "χ²_red").on_hover_text("Solo si la serie tiene errores");
+                ui.checkbox(&mut r.chi2, "χ²");
+                ui.checkbox(&mut r.p_value, "p-valor");
+                ui.checkbox(&mut r.residual_std, "s (residuos)");
+                ui.checkbox(&mut r.points, "n y ν");
+                ui.checkbox(&mut r.title, "Título");
+            });
+        });
+        if !box_visible {
+            ui.colored_label(WARN_COLOR, "El cuadro está oculto: actívalo en Estilo → Cuadro de resultados.");
+        }
+    }
 }

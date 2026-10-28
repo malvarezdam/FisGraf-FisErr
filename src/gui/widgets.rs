@@ -17,7 +17,10 @@ pub const WARN_COLOR: Color32 = Color32::from_rgb(0xC0, 0x80, 0x00);
 /// Campo numérico con paso proporcional al valor (sirve igual para 9,8 que para 1e-6).
 pub fn number(ui: &mut Ui, v: &mut f64) -> Response {
     let speed = (v.abs() * 0.005).max(1e-9);
-    ui.add(egui::DragValue::new(v).speed(speed).max_decimals(12))
+    // Se muestra la forma más corta del número (0, 9.79, 1.5e-7), sin ceros de relleno.
+    ui.add(egui::DragValue::new(v).speed(speed).custom_formatter(|v, _| {
+        if v != 0.0 && (v.abs() >= 1e7 || v.abs() < 1e-4) { format!("{v:e}") } else { format!("{v}") }
+    }))
 }
 
 /// Valor opcional: casilla para activarlo y campo numérico. `default` es el

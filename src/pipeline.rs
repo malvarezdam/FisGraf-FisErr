@@ -231,6 +231,9 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
         if cfg.series_ids.len() > 1 {
             label = format!("{label} ({})", series.label);
         }
+        if cfg.legend_r2 && out.goodness.r_squared.is_finite() {
+            label = format!("{label} ($R^2 = {}$)", r2_latex(out.goodness.r_squared, comma));
+        }
         let color = cfg.line.color.unwrap_or(series.color);
         scene.curves.push(SceneCurve {
             legend: (legend_on && cfg.show_in_legend).then_some(label),
@@ -254,7 +257,7 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
 
         if cfg.show_in_results_box {
             match &out.uncertainty {
-                Ok(u) => scene.results_box.extend(results_lines(cfg, out, u, comma)),
+                Ok(u) => scene.results_box.extend(results_lines(cfg, out, u, comma, &series.label)),
                 Err(e) => scene.warnings.push(format!("incertidumbre de «{}»: {e}", series.label)),
             }
         }
@@ -279,10 +282,76 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
 }
 
 /// `$g = \left(9{,}79 \pm 0{,}02\right)$\,\unit{m/s^2}` para cada parámetro libre.
-fn results_lines(cfg: &crate::config::FitConfig, out: &FitOutcome, u: &UncertaintyResult, comma: bool) -> Vec<String> {
+/// R² con los decimales justos para que se vea la diferencia con 1
+/// (0,950 · 0,9987 · 0,99983).
+pub fn r2_latex(r2: f64, comma: bool) -> String {
+    let decimals = if r2 < 1.0 { ((-(1.0 - r2).log10()).ceil() as i32 + 1).clamp(3, 6) as usize } else { 3 };
+    let s = format!("{r2:.decimals$}");
+    if comma { s.replace('.', "{,}") } else { s }
+}
+
+/// Número con 3 cifras significativas, en LaTeX.
+fn sig3(v: f64, comma: bool) -> String {
+    if !v.is_finite() {
+        return "\\text{—}".into();
+    }
+    let mag = if v == 0.0 { 0 } else { v.abs().log10().floor() as i32 };
+    if !(-3..5).contains(&mag) {
+        let r = crate::uncertainty::round_gum(v, f64::NAN, SigFigs::Auto, Some(true));
+        let m = format!("{:.2}", r.value);
+        let m = if comma { m.replace('.', "{,}") } else { m };
+        return format!("{m} \\times 10^{{{}}}", r.exponent);
+    }
+    let d = (2 - mag).max(0) as usize;
+    let s = format!("{v:.d$}");
+    if comma { s.replace('.', "{,}") } else { s }
+}
+
+/// Ecuación ajustada con los valores numéricos (redondeados según su error).
+fn fitted_equation(cfg: &crate::config::FitConfig, u: &UncertaintyResult, comma: bool) -> Option<String> {
+    let expr = crate::model::parse(&cfg.model.expression).ok()?;
+    let values: HashMap<&str, f64> = cfg
+        .model
+        .parameters
+        .iter()
+        .zip(&u.params)
+        .map(|(pc, p)| {
+            let v = if p.fixed {
+                p.value
+            } else {
+                let r = p.rounded(SigFigs::Auto, Some(false));
+                r.value * 10f64.powi(r.exponent)
+            };
+            (pc.name.as_str(), v)
+        })
+        .collect();
+    let substituted = expr.substitute(&|n| values.get(n).map(|v| crate::model::Expr::Num(*v)));
+    let simplified = crate::model::simplify::simplify(&substituted);
+    let rhs = crate::model::to_latex(&simplified, &LatexOptions { decimal_comma: comma, ..Default::default() });
+    let lhs = if cfg.results.equation_lhs.trim().is_empty() { "y" } else { cfg.results.equation_lhs.trim() };
+    Some(format!("${lhs} = {rhs}$"))
+}
+
+fn results_lines(cfg: &crate::config::FitConfig, out: &FitOutcome, u: &UncertaintyResult, comma: bool, series: &str) -> Vec<String> {
+    let items = &cfg.results;
+    let g = &out.goodness;
     let mut lines = Vec::new();
+    if items.title {
+        // Con varias series, el título dice a cuál corresponde.
+        let title = match (cfg.label.trim().is_empty(), cfg.series_ids.len() > 1) {
+            (false, true) => format!("{} ({series})", cfg.label),
+            (false, false) => cfg.label.clone(),
+            (true, _) => series.to_owned(),
+        };
+        lines.push(format!("\\textbf{{{title}}}"));
+    }
+    if items.equation
+        && let Some(eq) = fitted_equation(cfg, u, comma)
+    {
+        lines.push(eq);
+    }
     for (i, p) in u.params.iter().enumerate() {
-        if p.fixed {
+        if p.fixed || !items.parameters {
             continue;
         }
         let pc = &cfg.model.parameters[i];
@@ -296,12 +365,38 @@ fn results_lines(cfg: &crate::config::FitConfig, out: &FitOutcome, u: &Uncertain
         let unit = if pc.unit.trim().is_empty() { String::new() } else { format!("\\,\\unit{{{}}}", pc.unit) };
         lines.push(format!("${symbol} = {body}${unit}"));
     }
-    if out.result.weighted
-        && let Some(chi) = out.result.reduced_chi2()
+    if items.r_squared && g.r_squared.is_finite() {
+        lines.push(format!("$R^2 = {}$", r2_latex(g.r_squared, comma)));
+    }
+    if items.adj_r_squared
+        && let Some(r) = g.adj_r_squared
+    {
+        lines.push(format!("$R^2_{{\\mathrm{{aj}}}} = {}$", r2_latex(r, comma)));
+    }
+    if items.chi2 {
+        lines.push(format!("$\\chi^2 = {}$", sig3(g.chi2, comma)));
+    }
+    // χ²_red solo tiene sentido con errores (pesos).
+    if items.chi2_red
+        && out.result.weighted
+        && let Some(chi) = g.reduced_chi2
     {
         let s = format!("{chi:.2}");
         let s = if comma { s.replace('.', "{,}") } else { s };
         lines.push(format!("$\\chi^2_\\nu = {s}$"));
+    }
+    if items.p_value
+        && let Some(p) = g.p_value
+    {
+        lines.push(format!("$p = {}$", sig3(p, comma)));
+    }
+    if items.residual_std
+        && let Some(s) = g.residual_std
+    {
+        lines.push(format!("$s = {}$", sig3(s, comma)));
+    }
+    if items.points {
+        lines.push(format!("$n = {}$, $\\nu = {}$", g.n, g.dof));
     }
     lines
 }
