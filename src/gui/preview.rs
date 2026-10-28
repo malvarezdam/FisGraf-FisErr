@@ -18,8 +18,8 @@ fn dash_style(d: DashPattern) -> LineStyle {
         DashPattern::Dashed => LineStyle::Dashed { length: 8.0 },
         DashPattern::DenselyDashed => LineStyle::Dashed { length: 5.0 },
         DashPattern::LooselyDashed => LineStyle::Dashed { length: 12.0 },
-        DashPattern::Dotted => LineStyle::Dotted { spacing: 5.0 },
-        DashPattern::DenselyDotted => LineStyle::Dotted { spacing: 3.0 },
+        DashPattern::Dotted => LineStyle::Dotted { spacing: 8.0 },
+        DashPattern::DenselyDotted => LineStyle::Dotted { spacing: 5.0 },
         DashPattern::DashDot => LineStyle::Dashed { length: 6.0 },
     }
 }
@@ -67,10 +67,7 @@ fn segments(points: impl Iterator<Item = [f64; 2]>) -> Vec<Vec<[f64; 2]>> {
 }
 
 pub fn quick_preview(ui: &mut Ui, project: &ProjectConfig, out: Option<&Output>, busy: bool) {
-    ui.horizontal(|ui| {
-        ui.heading("Vista rápida");
-        ui.weak("(aproximada: el gráfico final se compone con LaTeX)");
-    });
+    ui.weak("Aproximada: el gráfico final se compone con LaTeX (pestaña «Vista LaTeX»).");
     let Some(out) = out else {
         ui.add_space(30.0);
         if busy {
@@ -116,6 +113,13 @@ pub fn quick_preview(ui: &mut Ui, project: &ProjectConfig, out: Option<&Output>,
         plot = plot.default_y_bounds(a, b);
     }
 
+    // La aplicación es oscura, pero el gráfico se ve claro, como quedará impreso.
+    let mut ui = ui.new_child(egui::UiBuilder::new());
+    let ui = &mut ui;
+    *ui.visuals_mut() = egui::Visuals::light();
+    let rect = ui.available_rect_before_wrap();
+    ui.painter().rect_filled(rect, 4.0, egui::Color32::WHITE);
+
     plot.show(ui, |pui| {
         for (i, c) in scene.curves.iter().enumerate() {
             if let Some(b) = &c.band {
@@ -148,19 +152,34 @@ pub fn quick_preview(ui: &mut Ui, project: &ProjectConfig, out: Option<&Output>,
             // El nombre agrupa todo en una entrada de la leyenda; el id (único)
             // distingue cada elemento para egui_plot.
             let bar = |id: (usize, usize, u8), a: [f64; 2], b: [f64; 2]| {
-                Line::new(name.clone(), PlotPoints::from(vec![a, b])).id(("barra", id)).color(color).width(1.0).allow_hover(false)
+                Line::new(name.clone(), PlotPoints::from(vec![a, b])).id(("barra", id)).color(color).width(1.2).allow_hover(false)
             };
+            // Topes perpendiculares en cada extremo, de tamaño fijo en pantalla:
+            // se pasa de píxeles a unidades del gráfico con la escala actual.
+            let [dvx, dvy] = pui.transform().dvalue_dpos();
+            let cap_px = if p.error_cap_pt > 0.0 { (p.error_cap_pt * PX_PER_PT * 1.6).max(3.0) as f64 } else { 0.0 };
+            let (cx, cy) = (cap_px * dvx.abs(), cap_px * dvy.abs());
             for k in 0..p.x.len() {
                 let (x, y) = (p.x[k], p.y[k]);
                 if let Some(e) = &p.y_err
                     && e[k] > 0.0
                 {
-                    pui.line(bar((i, k, 0), [tx(x), ty(y - e[k])], [tx(x), ty(y + e[k])]));
+                    let (lo, hi) = (ty(y - e[k]), ty(y + e[k]));
+                    pui.line(bar((i, k, 0), [tx(x), lo], [tx(x), hi]));
+                    if cap_px > 0.0 {
+                        pui.line(bar((i, k, 2), [tx(x) - cx, lo], [tx(x) + cx, lo]));
+                        pui.line(bar((i, k, 3), [tx(x) - cx, hi], [tx(x) + cx, hi]));
+                    }
                 }
                 if let Some(e) = &p.x_err
                     && e[k] > 0.0
                 {
-                    pui.line(bar((i, k, 1), [tx(x - e[k]), ty(y)], [tx(x + e[k]), ty(y)]));
+                    let (lo, hi) = (tx(x - e[k]), tx(x + e[k]));
+                    pui.line(bar((i, k, 1), [lo, ty(y)], [hi, ty(y)]));
+                    if cap_px > 0.0 {
+                        pui.line(bar((i, k, 4), [lo, ty(y) - cy], [lo, ty(y) + cy]));
+                        pui.line(bar((i, k, 5), [hi, ty(y) - cy], [hi, ty(y) + cy]));
+                    }
                 }
             }
             if let Some(connect) = &p.connect {

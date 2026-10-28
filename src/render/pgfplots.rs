@@ -356,7 +356,7 @@ fn picture(project: &ProjectConfig, scene: &Scene) -> String {
                 color: r.color,
                 marker: r.marker,
                 marker_size_pt: r.marker_size_pt,
-                error_cap_pt: 0.0,
+                error_cap_pt: r.error_cap_pt,
                 connect: None,
                 x: r.x.clone(),
                 y: r.residuals.clone(),

@@ -312,4 +312,18 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
     - "Copiar tabla LaTeX" (`gui::results::results_latex`) y "Copiar texto".
   - Lección: un panel de egui guarda el tamaño de su contenido. Si el contenido no llena el panel (o si lo fuerza a crecer), el alto queda mal. Lo correcto es envolver todo en un `ScrollArea` con `auto_shrink(false)`.
   - Verificado con capturas de todas las pestañas y con 12 pruebas de kittest (incluida la exportación real a PDF).
-- [ ] Fase 8 — Vista previa LaTeX y pulido
+- [x] Fase 8 — Vista previa LaTeX y pulido
+  - **Vista LaTeX** (`gui/latex_preview.rs`):
+    - Selector "Vista rápida / Vista LaTeX" sobre la vista central.
+    - Compila solo mientras la vista LaTeX está visible y cuando terminó el cálculo del proyecto actual, una vez a la vez. Si el proyecto cambió durante la compilación, vuelve a compilar al terminar.
+    - Usa una carpeta propia (`build_dir()/vista`, archivo `vista_previa`) para no pisar exportaciones. PNG a 200 ppp cargado con `image` como textura.
+    - Si hay un error, se ve junto con la última imagen que compiló.
+  - **Pedido del usuario durante la fase:**
+    - Barras de error en cruz con topes perpendiculares en los 4 extremos. En LaTeX ya los tenían los datos; se agregaron al panel de residuos (`SceneResiduals.error_cap_pt`) y a la vista rápida, con tamaño fijo en píxeles mediante `PlotTransform::dvalue_dpos`.
+    - Interfaz siempre en modo oscuro (`set_theme(Dark)`) y gráficos claros: la vista rápida se dibuja con `Visuals::light()` sobre fondo blanco; la vista LaTeX va sobre un marco blanco.
+  - **Ejemplos nuevos:** `hooke` (texto con coma decimal, error por resolución, Palatino, residuos, k = 39,49 ± 0,12 N/m) y `decaimiento` (hoja nueva en el Excel; eje log, banda, perfil de χ²: τ = 79,9 ± 3,3 s con τ real 80). "Abrir ejemplo" lista todos los `*.fisgraf.json` de `examples/proyectos`.
+  - **Pulido:** sin consola en la versión release (`windows_subsystem = "windows"`); los trazos punteados de la vista rápida se distinguen de los continuos.
+  - **Manual:** `README.md` (requisitos, flujo de trabajo, sintaxis de ecuaciones, qué método elegir, ejemplos, problemas frecuentes). Las imágenes de muestra están en `docs/`.
+  - Pruebas: la vista LaTeX compila dentro de la aplicación y los 4 ejemplos calculan sin avisos. Total: 90 pruebas.
+
+**Proyecto completo.** Todas las fases del plan están terminadas.

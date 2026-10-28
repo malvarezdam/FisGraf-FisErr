@@ -245,6 +245,7 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
                 color: series.color,
                 marker: series.marker,
                 marker_size_pt: series.marker_size_pt,
+                error_cap_pt: series.error_cap_pt,
                 x: data.x.clone(),
                 residuals: out.result.residuals.clone(),
                 y_err: data.y_err.clone(),

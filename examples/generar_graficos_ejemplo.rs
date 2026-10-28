@@ -16,7 +16,13 @@ fn main() -> anyhow::Result<()> {
     std::fs::create_dir_all(&projects)?;
     let excel = root.join("datos").join("ejemplo.xlsx");
 
-    for (name, project) in [("imanes", imanes(&excel)), ("pendulo", pendulo(&excel))] {
+    let all = [
+        ("imanes", imanes(&excel)),
+        ("pendulo", pendulo(&excel)),
+        ("hooke", hooke(&excel)),
+        ("decaimiento", decaimiento(&excel)),
+    ];
+    for (name, project) in all {
         let path = projects.join(format!("{name}.{PROJECT_EXTENSION}"));
         project.save(&path)?;
         // Se vuelve a cargar para recorrer el mismo camino que la interfaz.
@@ -147,5 +153,113 @@ fn pendulo(excel: &Path) -> ProjectConfig {
     p.figure.results_box = ResultsBoxConfig { show: true, position: LegendPosition::NorthWest };
     p.figure.residuals_panel = true;
     p.export = ExportConfig { file_stem: "pendulo".into(), png: true, svg: true, ..Default::default() };
+    p
+}
+
+/// Ley de Hooke: Δx = g·m/k, con números escritos como texto en el Excel y
+/// error de y dado por la resolución de la regla (1 mm).
+fn hooke(excel: &Path) -> ProjectConfig {
+    let mut p = ProjectConfig { excel_path: Some(excel.to_owned()), ..Default::default() };
+    let sid = p.add_series();
+    let s = &mut p.series[0];
+    s.label = "Resorte".into();
+    s.x_range = "Hooke!A2:A6".into();
+    s.y_range = "Hooke!B2:B6".into();
+    s.y_error = ErrorSpec::Resolution(0.001);
+    s.marker = Marker::Diamond;
+    s.marker_size_pt = 2.5;
+
+    p.fits.push(FitConfig {
+        id: p.next_id(),
+        series_ids: vec![sid],
+        label: r"$\Delta x = g\,m/k$".into(),
+        model: ModelConfig {
+            expression: "9.81*m/k".into(),
+            variable: "m".into(),
+            parameters: vec![ParameterConfig { name: "k".into(), unit: "N/m".into(), initial: 30.0, lower: Some(0.0), ..Default::default() }],
+            latex_override: String::new(),
+        },
+        uncertainty: UncertaintyConfig { covariance_mode: CovarianceMode::Absolute, ..Default::default() },
+        show_in_results_box: true,
+        ..Default::default()
+    });
+    p.x_axis = AxisConfig {
+        label: r"Masa $m$ [\unit{kg}]".into(),
+        min: Some(0.0),
+        max: Some(0.3),
+        number_format: NumberFormat { notation: Notation::Fixed, decimals: 2, ..Default::default() },
+        ..Default::default()
+    };
+    p.y_axis = AxisConfig {
+        label: r"Elongación $\Delta x$ [\unit{m}]".into(),
+        number_format: NumberFormat { notation: Notation::Fixed, decimals: 2, ..Default::default() },
+        ..Default::default()
+    };
+    p.figure.font = FontChoice::Palatino;
+    p.figure.results_box = ResultsBoxConfig { show: true, position: LegendPosition::NorthWest };
+    p.figure.residuals_panel = true;
+    p.export = ExportConfig { file_stem: "hooke".into(), png: true, ..Default::default() };
+    p
+}
+
+/// Decaimiento radiactivo con fondo, eje y logarítmico y errores asimétricos
+/// por perfil de χ².
+fn decaimiento(excel: &Path) -> ProjectConfig {
+    let mut p = ProjectConfig { excel_path: Some(excel.to_owned()), ..Default::default() };
+    let sid = p.add_series();
+    let s = &mut p.series[0];
+    s.label = "Contador Geiger".into();
+    s.x_range = "Decaimiento!A2:A".into();
+    s.y_range = "Decaimiento!B2:B".into();
+    s.y_error = ErrorSpec::Range("Decaimiento!C2:C".into());
+    s.color = Rgb(0x2C, 0xA0, 0x2C);
+
+    p.fits.push(FitConfig {
+        id: p.next_id(),
+        series_ids: vec![sid],
+        label: r"$N_0\,e^{-t/\tau} + B$".into(),
+        model: ModelConfig {
+            expression: "N0*exp(-t/tau) + B".into(),
+            variable: "t".into(),
+            parameters: vec![
+                ParameterConfig { name: "N0".into(), initial: 800.0, lower: Some(0.0), ..Default::default() },
+                ParameterConfig { name: "tau".into(), unit: "s".into(), initial: 60.0, lower: Some(1.0), ..Default::default() },
+                ParameterConfig { name: "B".into(), initial: 20.0, lower: Some(0.0), ..Default::default() },
+            ],
+            latex_override: String::new(),
+        },
+        method: FitMethod::LevenbergMarquardt,
+        uncertainty: UncertaintyConfig {
+            method: UncertaintyMethod::ChiSquareProfile,
+            covariance_mode: CovarianceMode::Absolute,
+            ..Default::default()
+        },
+        line: LineStyle { color: Some(Rgb(0x94, 0x67, 0xBD)), ..Default::default() },
+        show_band: true,
+        show_in_results_box: true,
+        ..Default::default()
+    });
+    p.references.push(ReferenceFunction {
+        id: p.next_id(),
+        label: "Fondo $B = 50$".into(),
+        expression: "50 + 0*t".into(),
+        variable: "t".into(),
+        ..Default::default()
+    });
+    p.x_axis = AxisConfig {
+        label: r"Tiempo $t$ [\unit{s}]".into(),
+        number_format: NumberFormat { notation: Notation::Fixed, decimals: 0, ..Default::default() },
+        ..Default::default()
+    };
+    p.y_axis = AxisConfig {
+        label: "Cuentas $N$".into(),
+        scale: AxisScale::Log10,
+        number_format: NumberFormat { notation: Notation::Fixed, decimals: 0, ..Default::default() },
+        ..Default::default()
+    };
+    p.figure.aspect = AspectRatio::Golden;
+    p.figure.legend.position = LegendPosition::NorthEast;
+    p.figure.results_box = ResultsBoxConfig { show: true, position: LegendPosition::SouthWest };
+    p.export = ExportConfig { file_stem: "decaimiento".into(), png: true, ..Default::default() };
     p
 }

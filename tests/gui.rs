@@ -243,3 +243,35 @@ fn export_from_gui_writes_files() {
     assert!(report.files.iter().any(|f| f.extension().is_some_and(|e| e == "pdf")));
     std::fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn latex_preview_compiles_inside_the_app() {
+    if fisgraf::render::compile::find_program("lualatex").is_none() {
+        return;
+    }
+    let mut app = computed_app("imanes");
+    app.latex_view = true;
+    let mut h = harness(app);
+    let start = std::time::Instant::now();
+    while !h.state().latex_preview_ready() && start.elapsed() < std::time::Duration::from_secs(120) {
+        h.run_steps(1);
+        assert!(h.state().latex_preview_error().is_none(), "{:?}", h.state().latex_preview_error());
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+    assert!(h.state().latex_preview_ready());
+    h.get_by_label_contains("Compilado en");
+}
+
+#[test]
+fn all_examples_compute_cleanly() {
+    for name in ["imanes", "pendulo", "hooke", "decaimiento"] {
+        let app = computed_app(name);
+        let out = app.worker.latest.as_ref().unwrap();
+        assert!(out.scene.warnings.is_empty(), "{name}: {:?}", out.scene.warnings);
+        for run in &out.computed.fits {
+            let o = run.outcome.as_ref().unwrap_or_else(|e| panic!("{name}: {e}"));
+            assert!(o.result.converged, "{name}");
+            assert!(o.uncertainty.is_ok(), "{name}");
+        }
+    }
+}

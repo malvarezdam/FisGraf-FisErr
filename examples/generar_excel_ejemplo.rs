@@ -60,6 +60,23 @@ fn main() -> Result<(), XlsxError> {
         sheet.write_string(i as u32 + 1, 1, *dx)?;
     }
 
+    // Decaimiento radiactivo con fondo: N(t) = N0·e^(−t/τ) + B, con N0 = 1000,
+    // τ = 80 s y B = 50 cuentas; ruido fijo del orden de √N.
+    let sheet = book.add_worksheet().set_name("Decaimiento")?;
+    for (c, h) in ["t [s]", "N [cuentas]", "σN"].iter().enumerate() {
+        sheet.write_string_with_format(0, c as u16, *h, &bold)?;
+    }
+    let noise = [0.8, -1.1, 0.3, 1.5, -0.6, -1.4, 0.9, 0.2, -0.3, 1.2, -0.9, 0.5, -1.6, 0.7, 0.1, -0.4];
+    for (i, z) in noise.iter().enumerate() {
+        let t = 20.0 * i as f64;
+        let ideal = 1000.0 * (-t / 80.0).exp() + 50.0;
+        let n = (ideal + z * ideal.sqrt()).round();
+        let r = i as u32 + 1;
+        sheet.write_number(r, 0, t)?;
+        sheet.write_number(r, 1, n)?;
+        sheet.write_number(r, 2, (n.sqrt() * 100.0).round() / 100.0)?;
+    }
+
     std::fs::create_dir_all("examples/datos").expect("crear carpeta de ejemplos");
     book.save("examples/datos/ejemplo.xlsx")?;
     println!("Escrito examples/datos/ejemplo.xlsx");

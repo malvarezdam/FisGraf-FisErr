@@ -8,6 +8,7 @@ mod fonts;
 pub mod history;
 mod names;
 mod panels;
+mod latex_preview;
 mod preview;
 pub mod results;
 pub mod text;
@@ -96,6 +97,9 @@ pub struct FisGrafApp {
     pub last_export: Option<Result<crate::render::ExportReport, String>>,
     /// Panel inferior: `true` = resultados, `false` = mensajes.
     pub show_results: bool,
+    /// Vista central: `true` = LaTeX real, `false` = vista rápida.
+    pub latex_view: bool,
+    latex_preview: latex_preview::LatexPreview,
 }
 
 impl Default for FisGrafApp {
@@ -126,11 +130,23 @@ impl Default for FisGrafApp {
             export_job: None,
             last_export: None,
             show_results: true,
+            latex_view: false,
+            latex_preview: Default::default(),
         }
     }
 }
 
 impl FisGrafApp {
+    /// `true` cuando la vista LaTeX tiene una imagen y no está compilando.
+    pub fn latex_preview_ready(&self) -> bool {
+        self.latex_preview.has_image() && !self.latex_preview.is_busy()
+    }
+
+    /// Error de la última compilación de la vista LaTeX.
+    pub fn latex_preview_error(&self) -> Option<&str> {
+        self.latex_preview.error()
+    }
+
     pub fn is_dirty(&self) -> bool {
         self.project != self.saved
     }
@@ -322,9 +338,19 @@ impl FisGrafApp {
                 let examples = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples").join("proyectos");
                 if examples.is_dir() {
                     ui.menu_button("Abrir ejemplo", |ui| {
-                        for name in ["imanes", "pendulo"] {
-                            let p = examples.join(format!("{name}.{PROJECT_EXTENSION}"));
-                            if p.is_file() && ui.button(name).clicked() {
+                        let suffix = format!(".{PROJECT_EXTENSION}");
+                        let mut found: Vec<(String, PathBuf)> = std::fs::read_dir(&examples)
+                            .into_iter()
+                            .flatten()
+                            .flatten()
+                            .filter_map(|e| {
+                                let name = e.file_name().to_string_lossy().strip_suffix(&suffix)?.to_owned();
+                                Some((name, e.path()))
+                            })
+                            .collect();
+                        found.sort();
+                        for (name, p) in found {
+                            if ui.button(name).clicked() {
                                 self.request(Pending::Open(Some(p)));
                                 ui.close();
                             }
@@ -360,6 +386,9 @@ impl FisGrafApp {
                 if self.worker.is_busy() {
                     ui.spinner();
                     ui.label("Calculando…");
+                } else if self.latex_preview.is_busy() {
+                    ui.spinner();
+                    ui.label("Compilando LaTeX…");
                 } else if let Some(o) = &self.worker.latest {
                     ui.weak(format!("Calculado en {} ms", o.elapsed.as_millis()));
                 }
@@ -461,6 +490,8 @@ impl FisGrafApp {
     pub fn draw(&mut self, ui: &mut Ui) {
         if !self.fonts_installed {
             fonts::install(ui.ctx());
+            // Interfaz oscura; los gráficos se muestran sobre fondo claro.
+            ui.ctx().set_theme(egui::Theme::Dark);
             self.fonts_installed = true;
         }
         self.sync_workbook();
@@ -471,8 +502,21 @@ impl FisGrafApp {
         egui::Panel::bottom("mensajes").resizable(true).default_size(220.0).min_size(60.0).show(ui, |ui| self.status_panel(ui));
         egui::Panel::left("controles").resizable(true).default_size(470.0).min_size(320.0).show(ui, |ui| self.tabs(ui));
         egui::CentralPanel::default_margins().show(ui, |ui| {
-            let busy = self.worker.is_busy();
-            preview::quick_preview(ui, &self.project, self.worker.latest.as_deref(), busy);
+            ui.horizontal(|ui| {
+                ui.selectable_value(&mut self.latex_view, false, RichText::new("Vista rápida").strong())
+                    .on_hover_text("Instantánea y aproximada (egui)");
+                ui.selectable_value(&mut self.latex_view, true, RichText::new("Vista LaTeX").strong())
+                    .on_hover_text("El gráfico final, compilado con LaTeX (tarda unos segundos)");
+            });
+            ui.separator();
+            if self.latex_view {
+                // Solo se compila mientras esta vista está visible.
+                self.latex_preview.update(ui.ctx(), &self.project, self.worker.latest.as_ref());
+                self.latex_preview.ui(ui);
+            } else {
+                let busy = self.worker.is_busy();
+                preview::quick_preview(ui, &self.project, self.worker.latest.as_deref(), busy);
+            }
         });
         self.confirm_modal(ui);
 

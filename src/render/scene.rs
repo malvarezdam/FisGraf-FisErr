@@ -42,6 +42,7 @@ pub struct SceneResiduals {
     pub color: Rgb,
     pub marker: Marker,
     pub marker_size_pt: f32,
+    pub error_cap_pt: f32,
     pub x: Vec<f64>,
     pub residuals: Vec<f64>,
     pub y_err: Option<Vec<f64>>,
