@@ -2,3 +2,10 @@
 /graficos/examples/salida
 /graficos/FisGraf.exe
 /errores/FisErr.exe
+/manual/manual.pdf
+/manual/*.aux
+/manual/*.log
+/manual/*.fls
+/manual/*.fdb_latexmk
+/manual/*.toc
+/manual/*.out
