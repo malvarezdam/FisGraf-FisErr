@@ -1,3 +1,4 @@
 /target
-/examples/salida
-/FisGraf.exe
+/graficos/examples/salida
+/graficos/FisGraf.exe
+/errores/FisErr.exe
