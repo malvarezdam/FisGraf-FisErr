@@ -85,8 +85,58 @@ pub fn div(a: Expr, b: Expr) -> Expr {
         (Expr::Neg(a), b) => neg(div(*a, b)),
         (a, Expr::Neg(b)) => neg(div(a, *b)),
         (Expr::Num(x), b) if x < 0.0 => neg(div(Expr::Num(-x), b)),
-        (a, b) => Expr::Div(Box::new(a), Box::new(b)),
+        (a, b) => cancel(a, b),
     }
+}
+
+/// Producto aplanado: coeficiente numérico y factores (base, exponente).
+fn factors(e: &Expr, coef: &mut f64, out: &mut Vec<(Expr, f64)>) {
+    match e {
+        Expr::Num(v) => *coef *= v,
+        Expr::Neg(a) => {
+            *coef = -*coef;
+            factors(a, coef, out);
+        }
+        Expr::Mul(a, b) => {
+            factors(a, coef, out);
+            factors(b, coef, out);
+        }
+        Expr::Pow(base, k) if matches!(**k, Expr::Num(_)) => {
+            let Expr::Num(k) = **k else { unreachable!() };
+            out.push(((**base).clone(), k));
+        }
+        other => out.push((other.clone(), 1.0)),
+    }
+}
+
+/// Cancela factores comunes de una fracción (T·x/T⁴ → x/T³) y une los
+/// coeficientes numéricos. Si no hay nada que cancelar, la deja como está.
+fn cancel(a: Expr, b: Expr) -> Expr {
+    let (mut ca, mut cb) = (1.0, 1.0);
+    let (mut fa, mut fb) = (Vec::new(), Vec::new());
+    factors(&a, &mut ca, &mut fa);
+    factors(&b, &mut cb, &mut fb);
+    let mut cancelled = false;
+    for (base, k) in fa.iter_mut() {
+        if let Some((_, kb)) = fb.iter_mut().find(|(bb, kb)| bb == base && *kb != 0.0) {
+            let common = k.min(*kb);
+            if common > 0.0 {
+                *k -= common;
+                *kb -= common;
+                cancelled = true;
+            }
+        }
+    }
+    let int_coefs = ca.fract() == 0.0 && cb.fract() == 0.0 && cb != 0.0;
+    let merge_coefs = int_coefs && (ca / cb).fract() == 0.0 && cb != 1.0;
+    if !cancelled && !merge_coefs {
+        return Expr::Div(Box::new(a), Box::new(b));
+    }
+    let (ca, cb) = if merge_coefs { (ca / cb, 1.0) } else { (ca, cb) };
+    let build = |c: f64, fs: &[(Expr, f64)]| {
+        fs.iter().filter(|(_, k)| *k != 0.0).fold(num(c), |acc, (base, k)| mul(acc, pow(base.clone(), num(*k))))
+    };
+    div(build(ca, &fa), build(cb, &fb))
 }
 
 pub fn pow(a: Expr, b: Expr) -> Expr {
@@ -150,6 +200,9 @@ mod tests {
         assert_eq!(s("x^1 + y^0"), "x + 1");
         assert_eq!(s("x*x"), "x^2");
         assert_eq!(s("(T^2)^2"), "T^4");
+        assert_eq!(s("-2*(4*pi^2*L)*T/T^4"), "-8*pi^2*L/T^3");
+        assert_eq!(s("a*x/(x*b)"), "a/b");
+        assert_eq!(s("6*x/(3*y)"), "2*x/y");
         assert_eq!(s("(x^0.5)^2"), "x");
         assert_eq!(s("2^3 + sqrt(4)"), "10");
         assert_eq!(s("1/3"), "1/3");

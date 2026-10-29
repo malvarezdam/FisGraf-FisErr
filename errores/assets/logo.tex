@@ -1,0 +1,23 @@
+% Logo de FisErr: una distribución normal con la zona ±σ sombreada.
+% Se convierte a PNG e ICO con `cargo run -p fiserr --example generar_logo_fiserr`.
+\documentclass[tikz,border=0pt]{standalone}
+\begin{document}
+\begin{tikzpicture}
+  \definecolor{fondo}{HTML}{0E3B43}
+  \definecolor{fondo2}{HTML}{17606B}
+  \definecolor{curva}{HTML}{FCA311}
+  \definecolor{claro}{HTML}{F2F2F2}
+  \shade[top color=fondo2, bottom color=fondo, rounded corners=0.75cm] (0,0) rectangle (4,4);
+  % Zona ±σ bajo la campana.
+  \fill[curva, opacity=0.35]
+    (1.45,0.85) -- plot[smooth, domain=1.45:2.55, samples=30] (\x, {0.85 + 2.3*exp(-((\x-2)^2)/(2*0.55^2))}) -- (2.55,0.85) -- cycle;
+  % Eje.
+  \draw[claro, line width=2.4pt, line cap=round] (0.55,0.85) -- (3.45,0.85);
+  % Campana.
+  \draw[curva, line width=4.2pt, line cap=round]
+    plot[smooth, domain=0.6:3.4, samples=60] (\x, {0.85 + 2.3*exp(-((\x-2)^2)/(2*0.55^2))});
+  % Valor central y ±σ.
+  \draw[claro, line width=1.6pt, dashed] (2,0.85) -- (2,3.3);
+  \draw[claro, line width=1.6pt, <->, >=stealth] (1.45,1.25) -- (2.55,1.25);
+\end{tikzpicture}
+\end{document}

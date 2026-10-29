@@ -4,9 +4,10 @@
 //! previa en el centro y mensajes abajo. Los cálculos corren en segundo plano
 //! ([`worker`]) y cada cambio queda en el historial para deshacer ([`history`]).
 
-mod fonts;
+pub mod fonts;
+pub mod calculator;
 pub mod history;
-mod names;
+pub mod names;
 mod panels;
 mod latex_preview;
 mod preview;
@@ -23,7 +24,8 @@ use egui::{Key, KeyboardShortcut, Modifiers, RichText, Ui};
 use crate::config::{PROJECT_EXTENSION, ProjectConfig};
 use crate::data::{CellRef, Workbook};
 use history::History;
-pub use panels::{Target, export_project, parse_tick_list, result_latex, sync_parameters, sync_variables};
+pub use calculator::{result_latex, result_text, sync_variables};
+pub use panels::{Target, export_project, parse_tick_list, sync_parameters};
 use worker::Worker;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -102,8 +104,8 @@ pub struct FisGrafApp {
     /// Vista central: `true` = LaTeX real, `false` = vista rápida.
     pub latex_view: bool,
     pub selected_propagation: Option<u32>,
-    /// Último cálculo de propagación (se repite solo si cambia la configuración).
-    propagation_cache: Option<(crate::config::PropagationConfig, Result<crate::propagation::PropagationReport, String>)>,
+    /// Calculadora de la pestaña Propagación (guarda el último cálculo).
+    calculator: calculator::Calculator,
     latex_preview: latex_preview::LatexPreview,
 }
 
@@ -137,7 +139,7 @@ impl Default for FisGrafApp {
             show_results: true,
             latex_view: false,
             selected_propagation: None,
-            propagation_cache: None,
+            calculator: Default::default(),
             latex_preview: Default::default(),
         }
     }

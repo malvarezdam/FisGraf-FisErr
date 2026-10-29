@@ -344,6 +344,42 @@ fn monte_carlo(
     Ok(McResult { mean, std, interval, histogram, bin_width: width })
 }
 
+/// Nombre del símbolo de la incertidumbre de una variable: `sigma_L`.
+pub fn sigma_name(var: &str) -> String {
+    format!("sigma_{var}")
+}
+
+/// Función del error (propagación lineal) como expresión simbólica:
+/// σ_f = √(Σ (∂f/∂xᵢ)² σᵢ² + 2 Σ ρᵢⱼ (∂f/∂xᵢ)(∂f/∂xⱼ) σᵢ σⱼ).
+pub fn sigma_expression(cfg: &PropagationConfig, report: &PropagationReport) -> Expr {
+    use crate::model::simplify::{add, call, mul, num, pow};
+    let var = |n: &str| Expr::Var(sigma_name(n));
+    let deriv = |n: &str| report.derivatives.iter().find(|(m, _)| m == n).map(|(_, d)| d.clone());
+    let mut sum = num(0.0);
+    for (n, d) in &report.derivatives {
+        sum = add(sum, mul(pow(d.clone(), num(2.0)), pow(var(n), num(2.0))));
+    }
+    for c in &cfg.correlations {
+        if let (Some(da), Some(db)) = (deriv(&c.a), deriv(&c.b)) {
+            sum = add(sum, mul(mul(num(2.0 * c.rho), mul(da, db)), mul(var(&c.a), var(&c.b))));
+        }
+    }
+    call(crate::model::Func::Sqrt, sum)
+}
+
+/// Función del error en LaTeX, p. ej. `\sigma_{g} = \sqrt{…}`.
+pub fn sigma_latex(cfg: &PropagationConfig, report: &PropagationReport, comma: bool) -> String {
+    let mut opts = LatexOptions { decimal_comma: comma, ..Default::default() };
+    for v in &cfg.variables {
+        if !v.latex.trim().is_empty() {
+            opts.symbols.insert(v.name.clone(), v.latex.clone());
+            opts.symbols.insert(sigma_name(&v.name), format!("\\sigma_{{{}}}", v.latex));
+        }
+    }
+    let f = if cfg.latex.trim().is_empty() { symbol_latex(&cfg.name) } else { cfg.latex.clone() };
+    format!("\\sigma_{{{f}}} = {}", to_latex(&sigma_expression(cfg, report), &opts))
+}
+
 /// Fórmula de propagación lineal en LaTeX (entorno `align*`), con las
 /// derivadas parciales explícitas.
 pub fn formula_latex(cfg: &PropagationConfig, report: &PropagationReport, comma: bool) -> String {
@@ -504,5 +540,38 @@ mod tests {
         assert!(tex.contains(r"\sigma_{g} &= \sqrt{\left(\frac{\partial g}{\partial L}\right)^{2} \sigma_{L}^{2} + \left(\frac{\partial g}{\partial T}\right)^{2} \sigma_{T}^{2}}"), "{tex}");
         assert!(tex.contains(r"\frac{\partial g}{\partial T} &= -"), "{tex}");
         assert!(tex.ends_with("\\end{align*}\n"));
+    }
+}
+
+#[cfg(test)]
+mod sigma_tests {
+    use super::*;
+    use crate::config::PropagationVariable;
+
+    #[test]
+    fn symbolic_error_function() {
+        let c = PropagationConfig {
+            name: "f".into(),
+            expression: "x*y".into(),
+            variables: vec![
+                PropagationVariable { name: "x".into(), value: 2.0, sigma: 0.1, ..Default::default() },
+                PropagationVariable { name: "y".into(), value: 3.0, sigma: 0.2, ..Default::default() },
+            ],
+            samples: 1000,
+            ..Default::default()
+        };
+        let r = propagate(&c).unwrap();
+        let e = sigma_expression(&c, &r);
+        assert_eq!(e.to_string(), "sqrt(y^2*sigma_x^2 + x^2*sigma_y^2)");
+        // Evaluada en los valores medidos coincide con el método lineal.
+        let env = |n: &str| match n {
+            "x" => Some(2.0),
+            "y" => Some(3.0),
+            "sigma_x" => Some(0.1),
+            "sigma_y" => Some(0.2),
+            _ => None,
+        };
+        assert!((e.eval_with(&env) - r.get(PropagationMethod::Linear).sigma).abs() < 1e-12);
+        assert_eq!(sigma_latex(&c, &r, false), r"\sigma_{f} = \sqrt{y^{2} \sigma_{x}^{2} + x^{2} \sigma_{y}^{2}}");
     }
 }

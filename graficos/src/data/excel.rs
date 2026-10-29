@@ -26,6 +26,12 @@ impl Workbook {
             path: path.to_owned(),
             reason: e.to_string(),
         };
+        let ext = path.extension().map(|e| e.to_string_lossy().to_lowercase()).unwrap_or_default();
+        if matches!(ext.as_str(), "csv" | "tsv" | "txt") {
+            let text = std::fs::read(path).map_err(|e| open_err(&e))?;
+            let cells = read_csv(&String::from_utf8_lossy(&text));
+            return Ok(Self { path: path.to_owned(), sheets: vec![Sheet { name: CSV_SHEET.into(), cells }] });
+        }
         let mut book = open_workbook_auto(path).map_err(|e| open_err(&e))?;
         let mut sheets = Vec::new();
         for name in book.sheet_names() {
@@ -142,6 +148,66 @@ impl Workbook {
         };
         format!("{sheet}!{cell}")
     }
+}
+
+/// Nombre de la única hoja de un archivo CSV.
+pub const CSV_SHEET: &str = "Datos";
+
+/// Separa una línea CSV respetando comillas (`"a,b"` y `""` dentro).
+fn split_csv_line(line: &str, sep: char) -> Vec<String> {
+    let mut fields = Vec::new();
+    let mut cur = String::new();
+    let mut quoted = false;
+    let mut chars = line.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '"' if quoted && chars.peek() == Some(&'"') => {
+                cur.push('"');
+                chars.next();
+            }
+            '"' => quoted = !quoted,
+            c if c == sep && !quoted => fields.push(std::mem::take(&mut cur)),
+            c => cur.push(c),
+        }
+    }
+    fields.push(cur);
+    fields
+}
+
+/// Lee un CSV como una hoja. El separador se detecta en la primera línea
+/// (tabulador, `;` o `,`); con `;` o tabulador se admite coma decimal. Los
+/// números se guardan como números y el resto como texto.
+fn read_csv(text: &str) -> Range<Data> {
+    let text = text.trim_start_matches('\u{feff}');
+    let lines: Vec<&str> = text.lines().collect();
+    let first = lines.iter().find(|l| !l.trim().is_empty()).copied().unwrap_or("");
+    let sep = if first.contains('\t') {
+        '\t'
+    } else if first.contains(';') {
+        ';'
+    } else {
+        ','
+    };
+    let rows: Vec<Vec<String>> = lines.iter().map(|l| split_csv_line(l, sep)).collect();
+    let cols = rows.iter().map(Vec::len).max().unwrap_or(0);
+    if rows.is_empty() || cols == 0 {
+        return Range::empty();
+    }
+    let mut range = Range::new((0, 0), (rows.len() as u32 - 1, cols as u32 - 1));
+    for (r, row) in rows.iter().enumerate() {
+        for (c, field) in row.iter().enumerate() {
+            let f = field.trim();
+            let value = if f.is_empty() {
+                Data::Empty
+            } else if let Some(v) = parse_number(f).filter(|_| sep != ',' || !f.contains(',')) {
+                Data::Float(v)
+            } else {
+                Data::String(f.to_owned())
+            };
+            range.set_value((r as u32, c as u32), value);
+        }
+    }
+    range
 }
 
 /// Texto de una celda para mostrar. Los decimales binarios se recortan a 12

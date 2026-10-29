@@ -24,8 +24,10 @@ Paquetes LaTeX que se usan: `pgfplots`, `siunitx`, `amsmath`. Según la fuente e
 **Desde la terminal:**
 
 ```bash
-cargo run --release -- datos_de_prueba/proyectos/01_caida_libre.fisgraf.json
+cargo run --release -p fisgraf -- datos_de_prueba/proyectos/01_caida_libre.fisgraf.json
 ```
+
+Esta carpeta es parte de un workspace (ver el [README general](../README.md)). La calculadora de errores **FisErr** está en `../errores/`, y la herramienta de línea de comandos **`fisgraf-cli`** (que usa Claude) se compila desde aquí: `cargo build --release -p fisgraf --bin fisgraf-cli`.
 
 **Para probar:** en **Archivo → Abrir datos de prueba** hay ocho experimentos con mediciones simuladas (caída libre, Ohm, RC, oscilador, enfriamiento, resonancia, efecto fotoeléctrico y Boyle). La guía está en [datos_de_prueba/README.md](datos_de_prueba/README.md).
 

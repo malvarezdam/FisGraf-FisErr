@@ -13,7 +13,7 @@ fisgraf = { path = "../graficos" }
 anyhow = "1.0.104"
 eframe = "0.37.0"
 egui = "0.37.0"
-image = { version = "0.25.10", default-features = false, features = ["png"] }
+image = { version = "0.25.10", default-features = false, features = ["png", "ico"] }
 rfd = "0.17.2"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"

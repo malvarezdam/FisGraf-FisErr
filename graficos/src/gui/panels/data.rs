@@ -123,7 +123,7 @@ impl FisGrafApp {
         });
         ui.horizontal(|ui| {
             if ui.button("Abrir Excel…").clicked()
-                && let Some(p) = rfd::FileDialog::new().add_filter("Hojas de cálculo", &["xlsx", "xlsm", "xls", "xlsb", "ods"]).pick_file()
+                && let Some(p) = rfd::FileDialog::new().add_filter("Hojas de cálculo y CSV", &["xlsx", "xlsm", "xls", "xlsb", "ods", "csv", "tsv", "txt"]).pick_file()
             {
                 self.project.excel_path = Some(p);
             }

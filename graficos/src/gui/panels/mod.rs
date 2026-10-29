@@ -13,4 +13,4 @@ pub use axes::parse_tick_list;
 pub use data::Target;
 pub use export::export_project;
 pub use fits::sync_parameters;
-pub use propagation::{result_latex, sync_variables};
+

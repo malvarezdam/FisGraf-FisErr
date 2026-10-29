@@ -35,6 +35,11 @@ fn snippet(doc: &TexDocument) -> String {
 pub fn export(project: &ProjectConfig, scene: &Scene, out_dir: &Path) -> Result<ExportReport, RenderError> {
     let cfg = &project.export;
     let stem = if cfg.file_stem.trim().is_empty() { "grafico" } else { cfg.file_stem.trim() };
+    // Ruta absoluta: los conversores corren en la carpeta de compilación, y una
+    // ruta relativa terminaría allí.
+    let out_dir = std::path::absolute(if out_dir.as_os_str().is_empty() { Path::new(".") } else { out_dir })
+        .map_err(|e| RenderError::Io(e.to_string()))?;
+    let out_dir = out_dir.as_path();
     std::fs::create_dir_all(out_dir).map_err(|e| RenderError::Io(e.to_string()))?;
     let doc = generate(project, scene);
     let mut report = ExportReport { warnings: doc.warnings.clone(), ..Default::default() };

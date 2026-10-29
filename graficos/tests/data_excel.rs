@@ -166,3 +166,27 @@ fn example_workbook_loads() {
     assert_eq!(d.x[0], 0.05);
     assert_eq!(d.y[4], 0.0618);
 }
+
+#[test]
+fn csv_files_work_like_a_sheet() {
+    let dir = std::env::temp_dir();
+    let semi = dir.join(format!("fisgraf_csv_semi_{}.csv", std::process::id()));
+    std::fs::write(&semi, "t [s];x [m];σ\n0,1;0,51;0,01\n0,2;1,02;0,01\n\n0,3;1,49;0,02\n").unwrap();
+    let book = Workbook::open(&semi).unwrap();
+    assert_eq!(book.sheet_names().collect::<Vec<_>>(), ["Datos"]);
+    let mut cfg = series("A2:A", "B2:B");
+    cfg.y_error = ErrorSpec::Range("C2:C".into());
+    let d = load_series(&book, &cfg).unwrap();
+    assert_eq!(d.x, [0.1, 0.2, 0.3]);
+    assert_eq!(d.y, [0.51, 1.02, 1.49]);
+    assert_eq!(d.y_err.unwrap(), [0.01, 0.01, 0.02]);
+    assert_eq!(d.skipped, [2]);
+
+    let comma = dir.join(format!("fisgraf_csv_comma_{}.csv", std::process::id()));
+    std::fs::write(&comma, "x,y\n1,2.5\n2,\"4.9\"\n3,7.6\n").unwrap();
+    let book = Workbook::open(&comma).unwrap();
+    let d = load_series(&book, &series("Datos!A2:A4", "Datos!B2:B4")).unwrap();
+    assert_eq!(d.y, [2.5, 4.9, 7.6]);
+    std::fs::remove_file(semi).unwrap();
+    std::fs::remove_file(comma).unwrap();
+}
