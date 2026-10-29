@@ -1,5 +1,7 @@
 # FisGraf
 
+> Manual completo de las tres herramientas: [../MANUAL.md](../MANUAL.md).
+
 Gráficos de datos de física con calidad de publicación. FisGraf lee tus mediciones desde Excel, ajusta modelos teóricos con varios métodos numéricos, calcula la incertidumbre de cada parámetro y genera el gráfico con **LaTeX (pgfplots)**, así que todo el texto y las ecuaciones salen con tipografía LaTeX.
 
 ![Ejemplo: decaimiento radiactivo](docs/decaimiento.png)

@@ -8,6 +8,8 @@ Dos aplicaciones de escritorio y una herramienta de línea de comandos que compa
 | ![FisErr](errores/assets/logo.png) **FisErr** | [`errores/`](errores/README.md) | Calculadora de errores: ecuación teórica, mediciones con su error y constantes → valor final con su error y la función del error. |
 | **fisgraf-cli** | `graficos/src/bin` | Las mismas funciones por línea de comandos, con entrada y salida JSON. Es la herramienta que usa Claude. |
 
+**📖 Manual de uso:** [MANUAL.md](MANUAL.md): cómo usar cada programa y todas sus opciones.
+
 ## Abrir
 
 - **FisGraf:** `graficos\FisGraf.exe` (si no existe, doble clic en `graficos\crear_ejecutable.bat`).

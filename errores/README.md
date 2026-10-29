@@ -1,5 +1,7 @@
 # FisErr: calculadora de errores
 
+> Manual completo: [../MANUAL.md](../MANUAL.md).
+
 ![Logo de FisErr](assets/logo.png)
 
 Calcula el error de una magnitud a partir de mediciones. Escribes la **ecuación teórica**, indicas qué nombres son **variables medidas** (con su valor y su error) y cuáles son **constantes**, y obtienes **la función final con su error**.
