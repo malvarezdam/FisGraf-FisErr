@@ -38,6 +38,8 @@ La skill **`fisgraf`** (en `.claude/skills/fisgraf/`, con una copia instalada en
 
 Claude usará esta herramienta en lugar de calcular a mano. Obtendrás los mismos números que en las aplicaciones, redondeados según la GUM, y los gráficos con el mismo estilo LaTeX.
 
+**En otros proyectos:** doble clic en `crear_skill_portable.bat`. Crea `FisGraf-para-Claude.zip`, que contiene la skill con `fisgraf-cli.exe` dentro y 8 ejemplos. Descomprímelo en la raíz de cualquier proyecto (queda `.claude\skills\fisgraf\`) y Claude podrá usar la herramienta ahí. No hay que instalar nada; para los gráficos, ese computador necesita MiKTeX.
+
 ## Herramienta de línea de comandos
 
 ```bash
