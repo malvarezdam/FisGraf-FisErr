@@ -6,7 +6,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 |---|---|---|
 | <img src="graficos/assets/logo.png" width="40"> | **FisGraf** | Gráficos de datos con ajustes, errores y tipografía LaTeX. |
 | <img src="errores/assets/logo.png" width="40"> | **FisErr** | Calculadora de propagación de errores. |
-| ⌨ | **fisgraf-cli** | Las mismas funciones por línea de comandos (la usa Claude). |
+| ⌨ | **fisgraf-cli** | Las mismas funciones por línea de comandos y como servidor MCP, para que la use una IA. |
 
 **Contenido**
 
@@ -14,7 +14,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 2. [FisGraf](#2-fisgraf)
 3. [FisErr](#3-fiserr)
 4. [fisgraf-cli](#4-fisgraf-cli)
-5. [Usarlo con Claude](#5-usarlo-con-claude)
+5. [Usarlo con una IA](#5-usarlo-con-una-ia)
 6. [Referencia rápida](#6-referencia-rápida)
 7. [Problemas frecuentes](#7-problemas-frecuentes)
 
@@ -365,9 +365,9 @@ Los cálculos se guardan como `.fiserr.json`, que puede contener varios. Si hay 
 
 ## 4. fisgraf-cli
 
-Programa de línea de comandos con las mismas funciones, pensado para scripts y para que Claude lo use como herramienta. Recibe y devuelve **JSON**.
+Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve **JSON**.
 
-**Ubicación:** `target\release\fisgraf-cli.exe` (compílalo con `cargo build --release -p fisgraf --bin fisgraf-cli`).
+**Dónde conseguirlo:** `fisgraf-cli.exe` está en la página de descargas del repositorio. También puedes compilarlo con `cargo build --release -p fisgraf --bin fisgraf-cli` (queda en `target\release\`). Con `fisgraf-cli mcp` funciona como servidor MCP (sección 5).
 
 | Comando | Qué hace |
 |---|---|
@@ -437,22 +437,28 @@ fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos_f
 | `--salida DIR` | Carpeta de salida (si no, junto al proyecto). |
 | `--dpi N` | Resolución del PNG. |
 
-El proyecto es el mismo `.fisgraf.json` que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal, o escribirlo a mano. `fisgraf-cli plantilla grafico` da un proyecto mínimo, y el formato completo está en `.claude/skills/fisgraf/referencia.md`.
+El proyecto es el mismo `.fisgraf.json` que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal, o escribirlo a mano. `fisgraf-cli plantilla grafico` da un proyecto mínimo, y el formato completo está en `plugin/skills/fisgraf/referencia.md`.
 
 ---
 
-## 5. Usarlo con Claude
+## 5. Usarlo con una IA
 
-La skill **fisgraf** le enseña a Claude a usar `fisgraf-cli`. Está instalada en `~/.claude/skills/fisgraf/`, así que funciona en cualquier conversación. Basta con pedir lo que necesitas, por ejemplo:
+Una IA puede usar `fisgraf-cli` como herramienta: obtiene los mismos números que las aplicaciones, redondeados según la GUM, y los gráficos con el mismo estilo LaTeX. Basta con pedir lo que necesitas, por ejemplo:
 
 - «Calcula el error de g = 4π²L/T² con L = 1,000 ± 0,001 m y T = 2,007 ± 0,005 s».
 - «Ajusta los datos de `mediciones.xlsx` (columnas A y B, errores en C) a una exponencial y dame τ con su error».
 - «Haz un gráfico con barras de error, la recta ajustada y R² de estos datos: …».
 - «¿Qué medición domina el error de la densidad?».
 
-Claude usará la herramienta, informará los resultados redondeados según la GUM (con χ²_red y R² cuando corresponda) y te entregará los archivos del gráfico. Si quieres retocar un gráfico, abre con FisGraf el `.fisgraf.json` que haya creado.
+La IA informará los resultados (con χ²_red y R² cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el `.fisgraf.json` que haya creado.
 
-Para desactivarlo, borra la carpeta `~/.claude/skills/fisgraf/`.
+| Dónde | Cómo se instala |
+|---|---|
+| **Claude Code** (terminal o pestaña *Code*) | Plugin: `/plugin marketplace add malvarezdam/Errores-y-Gr-ficos` y después `/plugin install fisgraf@errores-y-graficos`. La primera vez descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`. |
+| **Un solo proyecto de Claude Code** | Descomprime `FisGraf-para-Claude.zip` (de la página de descargas) en la raíz del proyecto: queda `.claude\skills\fisgraf\` con el `.exe` incluido. |
+| **Claude Desktop, Cursor, VS Code y otras** | Servidor MCP. En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/Errores-y-Gr-ficos/main/instalar.ps1 \| iex`. Descarga la herramienta y, si tienes Claude Desktop, la registra; reinícialo después. Para otras apps, el servidor es `fisgraf-cli.exe` con el argumento `mcp`. |
+
+Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills\fisgraf\` del proyecto, o quita la entrada `fisgraf` de la configuración MCP.
 
 ---
 

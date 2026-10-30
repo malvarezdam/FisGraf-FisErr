@@ -10,7 +10,7 @@ set "RUSTFLAGS=-C target-feature=+crt-static"
 cargo build --release --workspace --bins --target-dir target\portable
 if errorlevel 1 (
     echo La compilacion fallo.
-    pause
+    if /i not "%~1"=="sinpausa" pause
     exit /b 1
 )
 set "RUSTFLAGS="
@@ -36,5 +36,11 @@ robocopy graficos\examples\proyectos portable\FisGraf\examples\proyectos /e /njh
 robocopy graficos\examples\datos     portable\FisGraf\examples\datos     /e /njh /njs /nfl /ndl >nul
 robocopy graficos\datos_de_prueba    portable\FisGraf\datos_de_prueba    /e /njh /njs /nfl /ndl >nul
 
-echo Listo: carpeta portable
+rem Un zip por programa en dist\ (son los que se suben a la Release de GitHub).
+if not exist dist mkdir dist
+del /q dist\FisGraf-portable.zip dist\FisErr-portable.zip 2>nul
+tar -a -c -f dist\FisGraf-portable.zip -C portable FisGraf LEEME.txt
+tar -a -c -f dist\FisErr-portable.zip  -C portable FisErr LEEME.txt
+
+echo Listo: carpeta portable, dist\FisGraf-portable.zip y dist\FisErr-portable.zip
 if /i not "%~1"=="sinpausa" pause

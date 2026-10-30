@@ -62,7 +62,7 @@
   \newcommand{\filacli}{}
   \newcommand{\filarust}{}
 \else
-  \newcommand{\filacli}{\textbf{fisgraf-cli} & Las mismas funciones por línea de comandos; la usa Claude.\\}
+  \newcommand{\filacli}{\textbf{fisgraf-cli} & Las mismas funciones por línea de comandos y como servidor MCP para IA.\\}
   \newcommand{\filarust}{\textbf{Rust} & Solo para compilar los programas (crear o actualizar los \code{.exe}).\\}
 \fi
 \fancyhead[R]{\small\color{texto2}\leftmark}
@@ -506,7 +506,7 @@ Los cálculos se guardan como \code{.fiserr.json}, que puede contener varios. Si
 % ------------------------------------------------------------------ 4
 \section{fisgraf-cli}
 
-Programa de línea de comandos con las mismas funciones, pensado para scripts y para que Claude lo use como herramienta. Recibe y devuelve \textbf{JSON}. Está en \code{target\bs release\bs fisgraf-cli.exe}; se compila con \code{cargo build --release -p fisgraf --bin fisgraf-cli}.
+Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve \textbf{JSON}. \code{fisgraf-cli.exe} está en la página de descargas del repositorio. También se puede compilar con \code{cargo build --release -p fisgraf --bin fisgraf-cli} (queda en \code{target\bs release}). Con \code{fisgraf-cli mcp} funciona como servidor MCP (sección~\ref{sec:ia}).
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
 \textbf{Comando} & \textbf{Qué hace}\\\midrule
@@ -574,14 +574,20 @@ fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos -
 \code{--dpi N} & Resolución del PNG.\\
 \end{opciones}
 
-El proyecto es el mismo \code{.fisgraf.json} que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal. \code{fisgraf-cli plantilla grafico} da un proyecto mínimo, y el formato completo está en \code{.claude/skills/fisgraf/referencia.md}.
+El proyecto es el mismo \code{.fisgraf.json} que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal. \code{fisgraf-cli plantilla grafico} da un proyecto mínimo, y el formato completo está en \code{plugin/skills/fisgraf/referencia.md}.
 
 % ------------------------------------------------------------------ 5
-\section{Usarlo con Claude}
+\section{Usarlo con una IA}\label{sec:ia}
 
-La skill \textbf{fisgraf} le enseña a Claude a usar \code{fisgraf-cli}. Está instalada en tu configuración de Claude, en la carpeta
-\begin{center}\code{\textasciitilde/.claude/skills/fisgraf/}\end{center}
-así que funciona en cualquier conversación. Basta con pedir lo que necesitas, por ejemplo:
+Una IA puede usar \code{fisgraf-cli} como herramienta: obtiene los mismos números que las aplicaciones y los gráficos con el mismo estilo LaTeX.
+
+\begin{opciones}
+Claude Code (terminal o pestaña \emph{Code}) & Plugin: \code{/plugin marketplace add malvarezdam/Errores-y-Gr-ficos} y luego \code{/plugin install fisgraf@errores-y-graficos}. La primera vez descarga \code{fisgraf-cli.exe} en \code{\%USERPROFILE\%\bs .fisgraf}.\\
+Un solo proyecto de Claude Code & Descomprime \code{FisGraf-para-Claude.zip} (página de descargas) en la raíz del proyecto: queda \code{.claude\bs skills\bs fisgraf} con el \code{.exe} incluido.\\
+Claude Desktop, Cursor, VS Code y otras & Servidor MCP: ejecuta \code{instalar.ps1} (ver el README del repositorio). Descarga la herramienta y la registra en Claude Desktop. En otras apps, el servidor es \code{fisgraf-cli.exe} con el argumento \code{mcp}.\\
+\end{opciones}
+
+Basta con pedir lo que necesitas, por ejemplo:
 
 \begin{itemize}
   \item «Calcula el error de $g = 4\pi^2L/T^2$ con $L = 1{,}000 \pm 0{,}001$\,m y $T = 2{,}007 \pm 0{,}005$\,s».
@@ -590,7 +596,7 @@ así que funciona en cualquier conversación. Basta con pedir lo que necesitas, 
   \item «¿Qué medición domina el error de la densidad?».
 \end{itemize}
 
-Claude usará la herramienta, informará los resultados redondeados según la GUM (con $\chi^2_{\text{red}}$ y $R^2$ cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el \code{.fisgraf.json} que haya creado. Para desactivarlo, borra la carpeta de la skill.
+La IA usará la herramienta, informará los resultados redondeados según la GUM (con $\chi^2_{\text{red}}$ y $R^2$ cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el \code{.fisgraf.json} que haya creado. Para desactivarlo: \code{/plugin uninstall fisgraf}, borra la carpeta de la skill o quita \code{fisgraf} de la configuración MCP.
 \fi\fi
 
 % ------------------------------------------------------------------ 6

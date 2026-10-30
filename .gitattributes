@@ -1,0 +1,8 @@
+# Los scripts de Windows necesitan CRLF (cmd interpreta mal las etiquetas con LF).
+*.bat   text eol=crlf
+*.ps1   text eol=crlf
+# Binarios.
+*.xlsx  binary
+*.png   binary
+*.ico   binary
+*.pdf   binary
