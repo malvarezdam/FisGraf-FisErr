@@ -108,6 +108,22 @@ fn pendulum_scene_has_fit_band_box_and_residuals() {
 }
 
 #[test]
+fn points_without_error_bars_keep_the_fit() {
+    let (mut p, with_bars) = example("pendulo");
+    assert!(with_bars.points.iter().any(|s| s.y_err.is_some()));
+    for s in &mut p.series {
+        s.error_bars = false;
+    }
+    let book = Workbook::open(p.excel_path.as_ref().unwrap()).unwrap();
+    let scene = build_scene(&p, &compute(&p, Some(&book)));
+    assert!(scene.points.iter().all(|s| s.x_err.is_none() && s.y_err.is_none()));
+    assert!(scene.residuals.iter().all(|r| r.y_err.is_none()));
+    // Los errores siguen pesando en el ajuste: el resultado no cambia.
+    assert_eq!(scene.results_box, with_bars.results_box);
+    assert!(!generate(&p, &scene).full.contains("error bars/"));
+}
+
+#[test]
 fn hidden_legend_entries_use_forget_plot() {
     let (mut p, _) = example("imanes");
     p.references[1].show_in_legend = false;

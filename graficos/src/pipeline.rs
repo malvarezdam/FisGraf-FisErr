@@ -120,7 +120,7 @@ fn x_range(project: &ProjectConfig, computed: &Computed) -> (f64, f64) {
     for s in project.series.iter().filter(|s| s.visible) {
         if let Some(Ok(d)) = computed.series.get(&s.id) {
             for (i, &x) in d.x.iter().enumerate() {
-                let e = d.x_err.as_ref().map_or(0.0, |e| e[i]);
+                let e = d.x_err.as_ref().filter(|_| s.error_bars).map_or(0.0, |e| e[i]);
                 if !log || x - e > 0.0 {
                     lo = lo.min(x - e);
                 }
@@ -251,7 +251,7 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
                 error_cap_pt: series.error_cap_pt,
                 x: data.x.clone(),
                 residuals: out.result.residuals.clone(),
-                y_err: data.y_err.clone(),
+                y_err: data.y_err.clone().filter(|_| series.error_bars),
             });
         }
 
@@ -274,8 +274,8 @@ pub fn build_scene(project: &ProjectConfig, computed: &Computed) -> Scene {
             connect: s.connect_points.clone(),
             x: d.x.clone(),
             y: d.y.clone(),
-            x_err: d.x_err.clone(),
-            y_err: d.y_err.clone(),
+            x_err: d.x_err.clone().filter(|_| s.error_bars),
+            y_err: d.y_err.clone().filter(|_| s.error_bars),
         });
     }
     scene

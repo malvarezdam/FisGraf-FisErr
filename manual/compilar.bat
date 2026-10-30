@@ -2,11 +2,12 @@
 rem Compila los manuales y los deja en la carpeta principal:
 rem   manual.tex        -> MANUAL.pdf         (FisGraf, FisErr y fisgraf-cli)
 rem   manual_fiserr.tex -> MANUAL_FisErr.pdf  (solo FisErr)
+rem   manual_portable.tex -> manual_portable.pdf (se queda aqui; lo usa crear_portable.bat)
 rem Usa lualatex directamente (latexmk necesita Perl). Dos pasadas: el indice y las
 rem referencias se resuelven en la segunda.
 rem Con el argumento "sinpausa" no espera una tecla al terminar (lo usa crear_portable.bat).
 cd /d "%~dp0"
-for %%M in (manual manual_fiserr) do (
+for %%M in (manual manual_fiserr manual_portable) do (
     lualatex -interaction=nonstopmode -halt-on-error %%M.tex >nul
     if errorlevel 1 goto fallo
     lualatex -interaction=nonstopmode -halt-on-error %%M.tex >nul

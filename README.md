@@ -10,7 +10,7 @@ Dos aplicaciones de escritorio y una herramienta de línea de comandos que compa
 
 **📖 Manual de uso:** [MANUAL.pdf](MANUAL.pdf) (para imprimir) o [MANUAL.md](MANUAL.md): cómo usar cada programa y todas sus opciones. Solo FisErr: [MANUAL_FisErr.pdf](MANUAL_FisErr.pdf). Los PDF se regeneran con `manual\compilar.bat`.
 
-**💼 Versión portable:** doble clic en `crear_portable.bat`. Crea la carpeta `portable\` con FisGraf, FisErr, fisgraf-cli, los ejemplos, los manuales y un `LEEME.txt`. Se puede copiar a un pendrive o a otro computador con Windows sin instalar nada (FisGraf necesita MiKTeX solo para la vista LaTeX y la exportación).
+**💼 Versión portable:** doble clic en `crear_portable.bat`. Crea la carpeta `portable\` con FisGraf, FisErr, los ejemplos, los manuales y un `LEEME.txt` (sin fisgraf-cli). Se puede copiar a un pendrive o a otro computador con Windows sin instalar nada (FisGraf necesita MiKTeX solo para la vista LaTeX y la exportación).
 
 ## Abrir
 

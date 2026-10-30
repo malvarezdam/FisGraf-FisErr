@@ -133,7 +133,8 @@ Cada serie es un conjunto de mediciones con su propio estilo y entrada en la ley
 | **Rango x · Rango y** | Celdas de los datos, p. ej. `Hoja1!A2:A20` o `A2:A`. Un ✔ verde o una ✖ roja indican si el rango es válido. |
 | **Error de x · Error de y** | Cómo se da el error (ver la tabla siguiente). |
 | **Color · Marcador · tamaño** | ● ■ ▲ ◆ × + ★ o ninguno, con su tamaño en pt. |
-| **Topes de error** | Largo de la línea al final de cada barra de error (0 = sin tope). |
+| **Dibujo** | **Solo puntos**, o **puntos con barras de error** (la cruz con topes, por defecto). Solo cambia el gráfico: los ajustes siguen usando los errores para ponderar. |
+| **Topes de error** | Largo de la línea al final de cada barra de error (0 = sin tope). Solo se puede cambiar con barras de error. |
 | **Unir puntos** | Línea que une los puntos, con su color, trazo, grosor y opacidad. |
 
 **Formas de indicar el error:**

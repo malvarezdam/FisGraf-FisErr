@@ -5,6 +5,10 @@
 \documentclass[11pt,a4paper]{article}
 \newif\iffiserr
 \ifdefined\SoloFisErr \fiserrtrue \fi
+% Si se define \Portable, sale el manual de la carpeta portable: sin fisgraf-cli
+% ni Claude, y con las rutas de esa carpeta (manual_portable.tex).
+\newif\ifportable
+\ifdefined\Portable \portabletrue \fi
 
 \usepackage{fontspec}
 \usepackage[spanish,es-noshorthands]{babel}
@@ -48,8 +52,18 @@
 \fancyhf{}
 \iffiserr
   \fancyhead[L]{\small\color{texto2}Manual de uso · FisErr}
+\else\ifportable
+  \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf y FisErr}
 \else
   \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf, FisErr y fisgraf-cli}
+\fi\fi
+% Filas de tabla que solo van en el manual completo (un \if no puede cruzar un &).
+\ifportable
+  \newcommand{\filacli}{}
+  \newcommand{\filarust}{}
+\else
+  \newcommand{\filacli}{\textbf{fisgraf-cli} & Las mismas funciones por línea de comandos; la usa Claude.\\}
+  \newcommand{\filarust}{\textbf{Rust} & Solo para compilar los programas (crear o actualizar los \code{.exe}).\\}
 \fi
 \fancyhead[R]{\small\color{texto2}\leftmark}
 \fancyfoot[C]{\small\thepage}
@@ -102,7 +116,7 @@
   \vspace{1.5cm}
   {\Huge\bfseries\color{azul} Manual de uso\par}
   \vspace{0.4cm}
-  {\Large FisGraf · FisErr · fisgraf-cli\par}
+  {\Large FisGraf · FisErr\ifportable\else{} · fisgraf-cli\fi\par}
   \vspace{0.3cm}
   {\color{naranja}\rule{0.55\linewidth}{1.5pt}\par}
   \vspace{0.6cm}
@@ -111,7 +125,7 @@
   \begin{tabular}{@{}l@{\quad}p{9cm}@{}}
     \textbf{\color{azul}FisGraf} & Gráficos desde Excel o CSV con ajustes, errores, $R^2$ y residuos.\\[3pt]
     \textbf{\color{verde}FisErr} & Calculadora de errores: valor final con su error y la función del error.\\[3pt]
-    \textbf{fisgraf-cli} & Las mismas funciones por línea de comandos; la usa Claude.\\
+    \filacli
   \end{tabular}
   \vspace{1.5cm}
 \end{titlepage}
@@ -140,12 +154,21 @@ Doble clic en \code{FisErr.exe}. No necesita instalación ni ningún otro progra
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
 \textbf{Programa} & \textbf{Necesario para}\\\midrule
-\textbf{MiKTeX} (o TeX Live) & La vista LaTeX y la exportación de gráficos en FisGraf, y el comando \code{grafico} de \code{fisgraf-cli}. FisErr no lo necesita.\\
-\textbf{Rust} & Solo para compilar los programas (crear o actualizar los \code{.exe}).\\\bottomrule
+\textbf{MiKTeX} (o TeX Live) & La vista LaTeX y la exportación de gráficos en FisGraf\ifportable\else, y el comando \code{grafico} de \code{fisgraf-cli}\fi. FisErr no lo necesita.\\
+\filarust\bottomrule
 \end{tabularx}
 
 \subsection{Abrir los programas}
 
+\ifportable
+\begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
+\textbf{Programa} & \textbf{Doble clic en}\\\midrule
+FisGraf & \code{FisGraf\bs FisGraf.exe}\\
+FisErr & \code{FisErr\bs FisErr.exe}\\\bottomrule
+\end{tabularx}
+
+No hay que instalar nada: la carpeta se puede copiar a un pendrive o a cualquier computador con Windows 10 u 11. Deja las carpetas \code{examples} y \code{datos\_de\_prueba} junto a \code{FisGraf.exe} para que funcionen los menús de ejemplos. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
+\else
 \begin{tabularx}{\linewidth}{@{}llX@{}}\toprule
 \textbf{Programa} & \textbf{Doble clic en} & \textbf{Si el \code{.exe} no existe}\\\midrule
 FisGraf & \code{graficos\bs FisGraf.exe} & doble clic en \code{graficos\bs crear\_ejecutable.bat}\\
@@ -153,6 +176,7 @@ FisErr & \code{errores\bs FisErr.exe} & doble clic en \code{errores\bs crear\_ej
 \end{tabularx}
 
 Para llevarlos a otro computador usa la carpeta \code{portable} (se crea con \code{crear\_portable.bat}): sus \code{.exe} no necesitan instalar nada. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
+\fi
 
 \subsection{Convenciones}
 
@@ -265,7 +289,8 @@ Visible · En la leyenda & Ocultar la serie, o dejarla fuera de la leyenda.\\
 Rango x · Rango y & Celdas de los datos, p.\,ej. \code{Hoja1!A2:A20} o \code{A2:A}. Un indicador verde o rojo muestra si el rango es válido.\\
 Error de x · Error de y & Cómo se da el error (ver la tabla siguiente).\\
 Color · Marcador · tamaño & Círculo, cuadrado, triángulo, rombo, cruz, más, estrella o ninguno, con su tamaño en pt.\\
-Topes de error & Largo de la línea al final de cada barra de error (0 = sin tope).\\
+Dibujo & \textbf{Solo puntos}, o \textbf{puntos con barras de error} (la cruz con topes, por defecto). Solo cambia el gráfico: los ajustes siguen usando los errores para ponderar.\\
+Topes de error & Largo de la línea al final de cada barra de error (0 = sin tope). Solo se puede cambiar con barras de error.\\
 Unir puntos & Línea que une los puntos, con su color, trazo, grosor y opacidad.\\
 \end{opciones}
 
@@ -477,7 +502,7 @@ Ver & Coma decimal (\code{9,80}) o punto (\code{9.80}).\\\bottomrule
 
 Los cálculos se guardan como \code{.fiserr.json}, que puede contener varios. Si hay cambios sin guardar, el título muestra $\bullet$.
 
-\iffiserr\else
+\iffiserr\else\ifportable\else
 % ------------------------------------------------------------------ 4
 \section{fisgraf-cli}
 
@@ -566,7 +591,7 @@ así que funciona en cualquier conversación. Basta con pedir lo que necesitas, 
 \end{itemize}
 
 Claude usará la herramienta, informará los resultados redondeados según la GUM (con $\chi^2_{\text{red}}$ y $R^2$ cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el \code{.fisgraf.json} que haya creado. Para desactivarlo, borra la carpeta de la skill.
-\fi
+\fi\fi
 
 % ------------------------------------------------------------------ 6
 \section{Referencia rápida}

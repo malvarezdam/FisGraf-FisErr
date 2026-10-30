@@ -166,8 +166,16 @@ fn series_editor(ui: &mut Ui, s: &mut SeriesConfig) {
             ui.add(egui::DragValue::new(&mut s.marker_size_pt).speed(0.05).range(0.5..=8.0).suffix(" pt"));
         });
         ui.end_row();
+        ui.label("Dibujo");
+        ui.horizontal(|ui| {
+            ui.radio_value(&mut s.error_bars, false, "Solo puntos");
+            ui.radio_value(&mut s.error_bars, true, "Puntos con barras de error");
+        })
+        .response
+        .on_hover_text("Solo cambia el dibujo: los ajustes siguen usando los errores");
+        ui.end_row();
         ui.label("Topes de error");
-        ui.add(egui::DragValue::new(&mut s.error_cap_pt).speed(0.05).range(0.0..=6.0).suffix(" pt"))
+        ui.add_enabled(s.error_bars, egui::DragValue::new(&mut s.error_cap_pt).speed(0.05).range(0.0..=6.0).suffix(" pt"))
             .on_hover_text("0 = barras sin tope");
         ui.end_row();
 

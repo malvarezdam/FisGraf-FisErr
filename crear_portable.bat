@@ -1,5 +1,5 @@
 @echo off
-rem Crea la carpeta "portable" con FisGraf, FisErr, fisgraf-cli, ejemplos y manuales.
+rem Crea la carpeta "portable" con FisGraf, FisErr, ejemplos y manuales (sin fisgraf-cli).
 rem Los .exe se compilan con la biblioteca de C estatica (+crt-static), asi que
 rem funcionan en cualquier Windows sin instalar Visual C++ Redistributable.
 setlocal
@@ -25,9 +25,11 @@ echo [3/3] Armando la carpeta portable...
 if exist portable rmdir /s /q portable
 mkdir portable\FisGraf portable\FisErr
 copy /y "%BIN%\fisgraf.exe"     "portable\FisGraf\FisGraf.exe" >nul
-copy /y "%BIN%\fisgraf-cli.exe" "portable\FisGraf\fisgraf-cli.exe" >nul
 copy /y "%BIN%\fiserr.exe"      "portable\FisErr\FisErr.exe" >nul
-copy /y MANUAL.pdf              "portable\FisGraf\Manual FisGraf.pdf" >nul
+rem Manual sin fisgraf-cli ni Claude; si no se pudo compilar, el completo.
+set "MANUAL=manual\manual_portable.pdf"
+if not exist "%MANUAL%" set "MANUAL=MANUAL.pdf"
+copy /y "%MANUAL%"              "portable\FisGraf\Manual FisGraf.pdf" >nul
 copy /y MANUAL_FisErr.pdf       "portable\FisErr\Manual FisErr.pdf" >nul
 copy /y manual\LEEME_portable.txt "portable\LEEME.txt" >nul
 robocopy graficos\examples\proyectos portable\FisGraf\examples\proyectos /e /njh /njs /nfl /ndl >nul

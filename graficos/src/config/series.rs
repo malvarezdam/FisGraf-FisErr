@@ -43,6 +43,9 @@ pub struct SeriesConfig {
     pub marker_size_pt: f32,
     /// Une los puntos con una línea (normalmente desactivado en física).
     pub connect_points: Option<LineStyle>,
+    /// Dibuja las barras de error (si las hay). Si es falso solo se ven los
+    /// puntos; los errores se siguen usando en los ajustes.
+    pub error_bars: bool,
     /// Ancho de los topes de las barras de error en puntos (0 = sin tope).
     pub error_cap_pt: f32,
 }
@@ -62,6 +65,7 @@ impl Default for SeriesConfig {
             marker: Marker::Circle,
             marker_size_pt: 2.0,
             connect_points: None,
+            error_bars: true,
             error_cap_pt: 2.0,
         }
     }

@@ -7,11 +7,10 @@ hacer doble clic en el .exe.
 
   FisGraf\FisGraf.exe        Gráficos de datos desde Excel o CSV, con ajustes,
                              errores, R², residuos y salida en LaTeX.
-  FisGraf\Manual FisGraf.pdf Manual completo (FisGraf, FisErr y fisgraf-cli).
+  FisGraf\Manual FisGraf.pdf Manual de FisGraf (incluye también FisErr).
   FisGraf\examples\          Proyectos de ejemplo (Archivo > Abrir ejemplo).
   FisGraf\datos_de_prueba\   8 experimentos simulados
                              (Archivo > Abrir datos de prueba).
-  FisGraf\fisgraf-cli.exe    Las mismas funciones por línea de comandos (JSON).
 
   FisErr\FisErr.exe          Calculadora de propagación de errores.
   FisErr\Manual FisErr.pdf   Manual de FisErr.
