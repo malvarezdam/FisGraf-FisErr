@@ -1,4 +1,4 @@
-# Errores y Gráficos: FisGraf y FisErr
+# FisGraf y FisErr
 
 Análisis de datos de física con calidad de publicación: **gráficos con ajustes y barras de error en LaTeX**, y **propagación de errores** según la GUM. La lógica numérica está escrita en Rust y validada con los datos certificados del NIST.
 
@@ -12,14 +12,14 @@ Análisis de datos de física con calidad de publicación: **gráficos con ajust
 
 ## ⬇️ Descargas
 
-Todo está en la **[última versión publicada (Releases)](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest)**. Son programas para Windows 10 u 11 que no necesitan instalación: descomprimes y haces doble clic.
+Todo está en la **[última versión publicada (Releases)](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest)**. Son programas para Windows 10 u 11 que no necesitan instalación: descomprimes y haces doble clic.
 
 | Archivo | Qué es |
 |---|---|
-| **[FisGraf-portable.zip](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/FisGraf-portable.zip)** | FisGraf (gráficos y errores) con su manual, proyectos de ejemplo y 8 experimentos de prueba. |
-| **[FisErr-portable.zip](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/FisErr-portable.zip)** | FisErr (solo errores) con su manual. |
-| **[FisGraf-para-Claude.zip](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/FisGraf-para-Claude.zip)** | La skill para Claude con la herramienta incluida (ver [Para IA](#-para-ia)). |
-| **[fisgraf-cli.exe](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/fisgraf-cli.exe)** | La herramienta de línea de comandos y servidor MCP, sola. |
+| **[FisGraf-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-portable.zip)** | FisGraf (gráficos y errores) con su manual, proyectos de ejemplo y 8 experimentos de prueba. |
+| **[FisErr-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisErr-portable.zip)** | FisErr (solo errores) con su manual. |
+| **[FisGraf-para-Claude.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-para-Claude.zip)** | La skill para Claude con la herramienta incluida (ver [Para IA](#-para-ia)). |
+| **[fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/fisgraf-cli.exe)** | La herramienta de línea de comandos y servidor MCP, sola. |
 
 - FisGraf necesita [MiKTeX](https://miktex.org) (o TeX Live) solo para la vista LaTeX y para exportar los gráficos. FisErr no lo necesita.
 - Si Windows muestra «Windows protegió su PC», pulsa *Más información → Ejecutar de todas formas* (los `.exe` no están firmados).
@@ -35,8 +35,8 @@ Una IA puede usar FisGraf como herramienta para calcular errores, ajustar modelo
 En Claude Code (terminal, o pestaña *Code* de la app de escritorio):
 
 ```text
-/plugin marketplace add malvarezdam/Errores-y-Gr-ficos
-/plugin install fisgraf@errores-y-graficos
+/plugin marketplace add malvarezdam/FisGraf-FisErr
+/plugin install fisgraf@fisgraf-fiserr
 ```
 
 Instala la skill **fisgraf**. La primera vez que Claude la use, descarga `fisgraf-cli.exe` (2,8 MB) en `%USERPROFILE%\.fisgraf\`. Después basta con pedirle cosas como:
@@ -45,7 +45,7 @@ Instala la skill **fisgraf**. La primera vez que Claude la use, descarga `fisgra
 - «ajusta los datos de medidas.xlsx a una exponencial y dame τ con su error»
 - «haz un gráfico con barras de error y R² de este CSV»
 
-**Alternativa sin plugin:** descomprime [FisGraf-para-Claude.zip](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/FisGraf-para-Claude.zip) en la raíz de un proyecto (queda `.claude\skills\fisgraf\`, con el `.exe` incluido).
+**Alternativa sin plugin:** descomprime [FisGraf-para-Claude.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-para-Claude.zip) en la raíz de un proyecto (queda `.claude\skills\fisgraf\`, con el `.exe` incluido).
 
 ### Claude Desktop, Cursor, VS Code y otras apps: servidor MCP
 
@@ -54,7 +54,7 @@ Instala la skill **fisgraf**. La primera vez que Claude la use, descarga `fisgra
 Instalación automática, en PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/malvarezdam/Errores-y-Gr-ficos/main/instalar.ps1 | iex
+irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/instalar.ps1 | iex
 ```
 
 [`instalar.ps1`](instalar.ps1) hace lo siguiente:
@@ -63,7 +63,7 @@ irm https://raw.githubusercontent.com/malvarezdam/Errores-y-Gr-ficos/main/instal
 2. Si tienes Claude Desktop, lo registra en su configuración (guarda antes una copia `.bak`). Reinicia Claude Desktop después.
 3. Muestra la configuración para otras aplicaciones.
 
-Instalación manual: descarga [fisgraf-cli.exe](https://github.com/malvarezdam/Errores-y-Gr-ficos/releases/latest/download/fisgraf-cli.exe) y agrega a la configuración MCP de tu aplicación:
+Instalación manual: descarga [fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/fisgraf-cli.exe) y agrega a la configuración MCP de tu aplicación:
 
 ```json
 {
@@ -91,7 +91,7 @@ Entrada y salida en JSON. El formato está en [SKILL.md](plugin/skills/fisgraf/S
 Requisitos: [Rust](https://rustup.rs), y [MiKTeX](https://miktex.org) o TeX Live para los gráficos.
 
 ```bash
-git clone https://github.com/malvarezdam/Errores-y-Gr-ficos.git
+git clone https://github.com/malvarezdam/FisGraf-FisErr.git
 ```
 
 ```bash

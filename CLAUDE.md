@@ -7,7 +7,7 @@ Workspace de Cargo con dos aplicaciones que comparten la lógica numérica:
 | `graficos/` | `fisgraf` | **FisGraf**: gráficos de datos con ajustes, incertidumbres y LaTeX. Contiene la biblioteca con toda la lógica (`src/lib.rs`) y la herramienta de línea de comandos **`fisgraf-cli`** (`src/bin/fisgraf-cli/`: `main.rs` con los comandos JSON y `mcp.rs` con el servidor MCP). Su arquitectura y su historial están en `graficos/PLAN.md`. |
 | `errores/` | `fiserr` | **FisErr**: calculadora de propagación de errores. Reutiliza `fisgraf::propagation` y `fisgraf::gui::calculator`; no duplica lógica. |
 
-Repositorio público: https://github.com/malvarezdam/Errores-y-Gr-ficos (rama `main`). Las descargas (portables, paquete para Claude y `fisgraf-cli.exe`) van en sus Releases, no en git.
+Repositorio público: https://github.com/malvarezdam/FisGraf-FisErr (rama `main`). Las descargas (portables, paquete para Claude y `fisgraf-cli.exe`) van en sus Releases, no en git.
 
 **Acceso para IA** (todo usa `fisgraf-cli`):
 - **Skill** `plugin/skills/fisgraf/` (SKILL.md, referencia.md y `ejemplos/`). Es la única copia en git y sirve para tres cosas:

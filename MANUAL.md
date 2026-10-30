@@ -454,9 +454,9 @@ La IA informará los resultados (con χ²_red y R² cuando corresponda) y te ent
 
 | Dónde | Cómo se instala |
 |---|---|
-| **Claude Code** (terminal o pestaña *Code*) | Plugin: `/plugin marketplace add malvarezdam/Errores-y-Gr-ficos` y después `/plugin install fisgraf@errores-y-graficos`. La primera vez descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`. |
+| **Claude Code** (terminal o pestaña *Code*) | Plugin: `/plugin marketplace add malvarezdam/FisGraf-FisErr` y después `/plugin install fisgraf@fisgraf-fiserr`. La primera vez descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`. |
 | **Un solo proyecto de Claude Code** | Descomprime `FisGraf-para-Claude.zip` (de la página de descargas) en la raíz del proyecto: queda `.claude\skills\fisgraf\` con el `.exe` incluido. |
-| **Claude Desktop, Cursor, VS Code y otras** | Servidor MCP. En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/Errores-y-Gr-ficos/main/instalar.ps1 \| iex`. Descarga la herramienta y, si tienes Claude Desktop, la registra; reinícialo después. Para otras apps, el servidor es `fisgraf-cli.exe` con el argumento `mcp`. |
+| **Claude Desktop, Cursor, VS Code y otras** | Servidor MCP. En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/instalar.ps1 \| iex`. Descarga la herramienta y, si tienes Claude Desktop, la registra; reinícialo después. Para otras apps, el servidor es `fisgraf-cli.exe` con el argumento `mcp`. |
 
 Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills\fisgraf\` del proyecto, o quita la entrada `fisgraf` de la configuración MCP.
 
