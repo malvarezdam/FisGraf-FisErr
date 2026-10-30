@@ -13,6 +13,7 @@ La skill `.claude/skills/fisgraf/` explica cómo usar `fisgraf-cli` como herrami
 - Compilar todo: `cargo build --workspace`. Probar todo: `cargo test --workspace`. Revisar: `cargo clippy --workspace --all-targets`.
 - Abrir las aplicaciones: `cargo run -p fisgraf` y `cargo run -p fiserr`.
 - Ejecutables: `graficos/crear_ejecutable.bat` y `errores/crear_ejecutable.bat` copian `FisGraf.exe` y `FisErr.exe` a sus carpetas. Están ignorados en git.
+- Versión portable: `crear_portable.bat` arma `portable/` (ignorada en git) con los `.exe` compilados con `+crt-static` en `target/portable`, ejemplos y manuales. Manuales: `manual/compilar.bat` → `MANUAL.pdf` y `MANUAL_FisErr.pdf`.
 - La herramienta queda en `target/release/fisgraf-cli.exe` (`cargo build --release -p fisgraf --bin fisgraf-cli`). Si cambia su interfaz JSON, actualiza la skill.
 
 ## Reglas de trabajo

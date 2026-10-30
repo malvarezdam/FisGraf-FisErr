@@ -9,3 +9,5 @@
 /manual/*.fdb_latexmk
 /manual/*.toc
 /manual/*.out
+/portable
+/manual/manual_fiserr.pdf

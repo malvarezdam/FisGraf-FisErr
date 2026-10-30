@@ -1,0 +1,34 @@
+FisGraf y FisErr: versión portable
+==================================
+
+Esta carpeta se puede copiar tal cual a un pendrive o a cualquier
+computador con Windows 10 u 11. No hay que instalar nada: basta con
+hacer doble clic en el .exe.
+
+  FisGraf\FisGraf.exe        Gráficos de datos desde Excel o CSV, con ajustes,
+                             errores, R², residuos y salida en LaTeX.
+  FisGraf\Manual FisGraf.pdf Manual completo (FisGraf, FisErr y fisgraf-cli).
+  FisGraf\examples\          Proyectos de ejemplo (Archivo > Abrir ejemplo).
+  FisGraf\datos_de_prueba\   8 experimentos simulados
+                             (Archivo > Abrir datos de prueba).
+  FisGraf\fisgraf-cli.exe    Las mismas funciones por línea de comandos (JSON).
+
+  FisErr\FisErr.exe          Calculadora de propagación de errores.
+  FisErr\Manual FisErr.pdf   Manual de FisErr.
+
+Requisitos
+----------
+- FisErr: ninguno.
+- FisGraf: funciona sin nada más para cargar datos, ajustar modelos y ver
+  el gráfico. Para la vista LaTeX y para exportar a PDF/PNG/SVG necesita
+  MiKTeX (https://miktex.org) o TeX Live instalado en ese computador.
+  La primera vez MiKTeX puede pedir permiso para instalar paquetes:
+  en MiKTeX Console > Settings elige "Always install missing packages".
+
+Notas
+-----
+- Si Windows muestra "Windows protegió su PC", pulsa "Más información" y
+  luego "Ejecutar de todas formas" (los .exe no están firmados).
+- Mantén las carpetas examples y datos_de_prueba junto a FisGraf.exe para
+  que funcionen los menús de ejemplos.
+- Para un acceso directo: clic derecho sobre el .exe > Enviar a > Escritorio.

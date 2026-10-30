@@ -36,7 +36,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 | FisGraf | `graficos\FisGraf.exe` | doble clic en `graficos\crear_ejecutable.bat` |
 | FisErr | `errores\FisErr.exe` | doble clic en `errores\crear_ejecutable.bat` |
 
-Los `.exe` se pueden copiar a cualquier carpeta o computador con Windows. Para un acceso directo: clic derecho sobre el `.exe` → *Enviar a* → *Escritorio*.
+Para llevarlos a otro computador usa la carpeta `portable` (se crea con `crear_portable.bat`): sus `.exe` no necesitan instalar nada. Para un acceso directo: clic derecho sobre el `.exe` → *Enviar a* → *Escritorio*.
 
 ### Convenciones de este manual
 

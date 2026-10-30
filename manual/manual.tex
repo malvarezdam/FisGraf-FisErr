@@ -1,6 +1,10 @@
 % Manual de uso de FisGraf, FisErr y fisgraf-cli.
 % Compilar con: manual/compilar.bat  (o: latexmk -lualatex manual.tex)
+% Si antes se define \SoloFisErr, sale el manual reducido de FisErr
+% (lo usa compilar.bat para crear manual_fiserr.pdf).
 \documentclass[11pt,a4paper]{article}
+\newif\iffiserr
+\ifdefined\SoloFisErr \fiserrtrue \fi
 
 \usepackage{fontspec}
 \usepackage[spanish,es-noshorthands]{babel}
@@ -42,7 +46,11 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf, FisErr y fisgraf-cli}
+\iffiserr
+  \fancyhead[L]{\small\color{texto2}Manual de uso · FisErr}
+\else
+  \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf, FisErr y fisgraf-cli}
+\fi
 \fancyhead[R]{\small\color{texto2}\leftmark}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -70,6 +78,22 @@
 \begin{document}
 
 % ------------------------------------------------------------------ Portada
+\iffiserr
+\begin{titlepage}
+  \centering
+  \vspace*{2.5cm}
+  \includegraphics[width=3.8cm]{../errores/assets/logo.png}\par
+  \vspace{1.5cm}
+  {\Huge\bfseries\color{azul} Manual de uso\par}
+  \vspace{0.4cm}
+  {\Large FisErr\par}
+  \vspace{0.3cm}
+  {\color{naranja}\rule{0.55\linewidth}{1.5pt}\par}
+  \vspace{0.6cm}
+  {\large Calculadora de propagación de errores:\\ el valor final con su error y la función del error\par}
+  \vfill
+\end{titlepage}
+\else
 \begin{titlepage}
   \centering
   \vspace*{2.5cm}
@@ -91,12 +115,26 @@
   \end{tabular}
   \vspace{1.5cm}
 \end{titlepage}
+\fi
 
 \tableofcontents
 \newpage
 
 % ------------------------------------------------------------------ 1
 \section{Antes de empezar}
+
+\iffiserr
+\subsection{Abrir el programa}
+
+Doble clic en \code{FisErr.exe}. No necesita instalación ni ningún otro programa: el \code{.exe} se puede copiar a cualquier carpeta, pendrive o computador con Windows 10 u 11. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
+
+\subsection{Convenciones}
+
+\begin{itemize}
+  \item $\sigma$ es la \emph{incertidumbre estándar}: el «error» de una medición, expresado como una desviación estándar.
+  \item Las ecuaciones se escriben en \textbf{sintaxis calculable}: \code{4*pi\^{}2*L/T\^{}2} (ver sección~\ref{sec:ecuaciones}).
+\end{itemize}
+\else
 
 \subsection{Requisitos}
 
@@ -114,7 +152,7 @@ FisGraf & \code{graficos\bs FisGraf.exe} & doble clic en \code{graficos\bs crear
 FisErr & \code{errores\bs FisErr.exe} & doble clic en \code{errores\bs crear\_ejecutable.bat}\\\bottomrule
 \end{tabularx}
 
-Los \code{.exe} se pueden copiar a cualquier carpeta o computador con Windows. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
+Para llevarlos a otro computador usa la carpeta \code{portable} (se crea con \code{crear\_portable.bat}): sus \code{.exe} no necesitan instalar nada. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
 
 \subsection{Convenciones}
 
@@ -123,7 +161,9 @@ Los \code{.exe} se pueden copiar a cualquier carpeta o computador con Windows. P
   \item Todo texto que aparece en los gráficos se escribe en \textbf{LaTeX}: \code{\$T\_0\$}, \code{[\bs unit\{m/s\^{}2\}]}. Lo que no va entre \code{\$…\$} es texto normal.
   \item Las ecuaciones se escriben en \textbf{sintaxis calculable}: \code{2*pi*sqrt(L/g)} (ver sección~\ref{sec:ecuaciones}).
 \end{itemize}
+\fi
 
+\iffiserr\else
 % ------------------------------------------------------------------ 2
 \section{FisGraf}
 
@@ -366,6 +406,7 @@ Para cada ajuste y serie muestra:
   \item \menu{Archivo $\rightarrow$ Abrir ejemplo}: imanes, péndulo, Hooke y decaimiento radiactivo.
   \item \menu{Archivo $\rightarrow$ Abrir datos de prueba}: 8 experimentos simulados, cada uno con opciones distintas (caída libre, ley de Ohm, carga RC, oscilador amortiguado, enfriamiento de Newton, resonancia RLC, efecto fotoeléctrico y ley de Boyle). Cada Excel trae una hoja \textbf{Notas} con los valores reales, para comparar.
 \end{itemize}
+\fi
 
 % ------------------------------------------------------------------ 3
 \section{FisErr}\label{sec:fiserr}
@@ -436,6 +477,7 @@ Ver & Coma decimal (\code{9,80}) o punto (\code{9.80}).\\\bottomrule
 
 Los cálculos se guardan como \code{.fiserr.json}, que puede contener varios. Si hay cambios sin guardar, el título muestra $\bullet$.
 
+\iffiserr\else
 % ------------------------------------------------------------------ 4
 \section{fisgraf-cli}
 
@@ -524,6 +566,7 @@ así que funciona en cualquier conversación. Basta con pedir lo que necesitas, 
 \end{itemize}
 
 Claude usará la herramienta, informará los resultados redondeados según la GUM (con $\chi^2_{\text{red}}$ y $R^2$ cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el \code{.fisgraf.json} que haya creado. Para desactivarlo, borra la carpeta de la skill.
+\fi
 
 % ------------------------------------------------------------------ 6
 \section{Referencia rápida}
@@ -543,6 +586,16 @@ Nombres & \code{omega} $\rightarrow \omega$, \code{T0} $\rightarrow T_0$, \code{
 
 \subsection{Qué método elegir}\label{sec:metodos}
 
+\iffiserr
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.32\linewidth}X@{}}\toprule
+\textbf{Método} & \textbf{Cuándo usarlo}\\\midrule
+Lineal (derivadas parciales) & Casi siempre: $\sigma_f = \sqrt{\sum_i (\partial f/\partial x_i)^2\sigma_i^2}$.\\
+Segundo orden & $f$ es muy curva o los errores relativos son grandes.\\
+Monte Carlo & Quieres el resultado más fiable sin suponer linealidad.\\
+Kragten & Quieres el equivalente numérico del lineal (EURACHEM).\\
+Cota máxima & Te piden el «error máximo» $\sum_i|\partial f/\partial x_i|\sigma_i$; es una cota, no una $\sigma$.\\\bottomrule
+\end{tabularx}
+\else
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.32\linewidth}X@{}}\toprule
 \multicolumn{2}{@{}l}{\textbf{\color{azul}Ajuste}}\\\midrule
 Automático & No sabes cuál: decide según el modelo y los errores.\\
@@ -563,7 +616,9 @@ Monte Carlo & Quieres el resultado más fiable sin suponer linealidad.\\
 Kragten & Quieres el equivalente numérico del lineal (EURACHEM).\\
 Cota máxima & Te piden el «error máximo» $\sum_i|\partial f/\partial x_i|\sigma_i$; es una cota, no una $\sigma$.\\\bottomrule
 \end{tabularx}
+\fi
 
+\iffiserr\else
 \subsection{Cómo leer los resultados}
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
@@ -576,12 +631,23 @@ $R^2$ & Qué fracción de la variación de y explica el modelo (1 = perfecto). P
 Residuos & Deben repartirse al azar alrededor de 0. Si muestran una forma, el modelo no es el adecuado.\\
 $|\rho| > 0{,}95$ & Dos parámetros casi no se pueden separar con estos datos.\\\bottomrule
 \end{tabularx}
+\fi
 
 \textbf{Redondeo (GUM):} la incertidumbre se da con 1 o 2 cifras significativas (regla del PDG) y el valor se redondea a la misma posición decimal: $9{,}793 \pm 0{,}021$, $239 \pm 4$.
 
 % ------------------------------------------------------------------ 7
 \section{Problemas frecuentes}
 
+\iffiserr
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.36\linewidth}X@{}}\toprule
+\textbf{Problema} & \textbf{Solución}\\\midrule
+«Parámetros en la ecuación: …» & Cambiaste la ecuación: pulsa \boton{Detectar variables}.\\
+Error al leer la ecuación & Revisa la sintaxis (sección~\ref{sec:ecuaciones}): la multiplicación se escribe con \code{*} entre nombres (\code{L*T}, no \code{LT}) y los paréntesis deben cerrar.\\
+Aparece un error al calcular &La ecuación no está definida en esos valores (raíz o logaritmo de un negativo, división por cero).\\
+Los métodos dan valores muy distintos & $f$ no es lineal en el rango de tus errores: usa Monte Carlo.\\
+Windows avisa «Windows protegió su PC» & El \code{.exe} no está firmado digitalmente: pulsa \menu{Más información $\rightarrow$ Ejecutar de todas formas}.\\\bottomrule
+\end{tabularx}
+\else
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.36\linewidth}X@{}}\toprule
 \textbf{Problema} & \textbf{Solución}\\\midrule
 «no se encontró lualatex» & Instala MiKTeX y reinicia el programa.\\
@@ -591,7 +657,9 @@ La primera compilación tarda o se queda esperando & MiKTeX está instalando paq
 El ajuste no converge & Acerca los valores iniciales, prueba Nelder–Mead + LM o pon límites a los parámetros.\\
 La leyenda o el cuadro tapan los datos & Cambia su posición en \emph{Estilo}. Con \emph{Personalizada} puedes ubicarlos exactamente.\\
 «Parámetros en la ecuación: …» & Cambiaste la ecuación: pulsa \boton{Actualizar parámetros} (o \boton{Detectar variables} en FisErr).\\
-El Excel cambió y no se ve & \menu{Datos $\rightarrow$ Recargar}.\\\bottomrule
+El Excel cambió y no se ve & \menu{Datos $\rightarrow$ Recargar}.\\
+Windows avisa «Windows protegió su PC» & El \code{.exe} no está firmado digitalmente: pulsa \menu{Más información $\rightarrow$ Ejecutar de todas formas}.\\\bottomrule
 \end{tabularx}
+\fi
 
 \end{document}
