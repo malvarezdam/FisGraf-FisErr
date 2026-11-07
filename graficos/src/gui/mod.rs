@@ -4,6 +4,7 @@
 //! previa en el centro y mensajes abajo. Los cálculos corren en segundo plano
 //! ([`worker`]) y cada cambio queda en el historial para deshacer ([`history`]).
 
+pub mod about;
 pub mod fonts;
 pub mod calculator;
 pub mod history;
@@ -107,6 +108,8 @@ pub struct FisGrafApp {
     /// Calculadora de la pestaña Propagación (guarda el último cálculo).
     calculator: calculator::Calculator,
     latex_preview: latex_preview::LatexPreview,
+    /// Ventana «Acerca de» abierta.
+    pub show_about: bool,
 }
 
 impl Default for FisGrafApp {
@@ -141,6 +144,7 @@ impl Default for FisGrafApp {
             selected_propagation: None,
             calculator: Default::default(),
             latex_preview: Default::default(),
+            show_about: false,
         }
     }
 }
@@ -383,6 +387,12 @@ impl FisGrafApp {
                     ui.close();
                 }
             });
+            ui.menu_button("Ayuda", |ui| {
+                if ui.button("Acerca de FisGraf…").clicked() {
+                    self.show_about = true;
+                    ui.close();
+                }
+            });
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 if self.worker.is_busy() {
                     ui.spinner();
@@ -521,6 +531,7 @@ impl FisGrafApp {
             }
         });
         self.confirm_modal(ui);
+        about::show(ui, &mut self.show_about, "FisGraf", "Gráficos de datos de física con ajustes, incertidumbres y LaTeX.");
 
         let ctx = ui.ctx().clone();
         // Cierre de la ventana con cambios sin guardar.

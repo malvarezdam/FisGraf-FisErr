@@ -63,3 +63,19 @@ fn save_and_open_roundtrip() {
     assert!(!other.is_dirty());
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn about_window_shows_author_and_license() {
+    let mut h = harness(FisErrApp::default());
+    h.run_steps(3);
+    h.get_by_label("Ayuda").click();
+    h.run_steps(3);
+    h.get_by_label("Acerca de FisErr…").click();
+    h.run_steps(3);
+    assert!(h.state().show_about);
+    h.get_by_label_contains("Martín Álvarez de Araya");
+    h.get_by_label_contains("citando siempre al autor");
+    h.get_by_label("Cerrar").click();
+    h.run_steps(3);
+    assert!(!h.state().show_about);
+}

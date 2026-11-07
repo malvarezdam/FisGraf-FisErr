@@ -1,6 +1,6 @@
 # FisErr: calculadora de errores
 
-> Manual completo: [../MANUAL.md](../MANUAL.md).
+> Manual completo: [../manual/MANUAL.md](../manual/MANUAL.md).
 
 ![Logo de FisErr](assets/logo.png)
 

@@ -1,3 +1,4 @@
+// FisGraf y FisErr © 2026 Martín Álvarez de Araya. Todos los derechos reservados (ver LICENSE).
 // En la versión compilada no se abre una consola junto a la ventana.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 

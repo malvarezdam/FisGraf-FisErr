@@ -1,11 +1,12 @@
 @echo off
-rem Compila los manuales y los deja en la carpeta principal:
-rem   manual.tex        -> MANUAL.pdf         (FisGraf, FisErr y fisgraf-cli)
-rem   manual_fiserr.tex -> MANUAL_FisErr.pdf  (solo FisErr)
-rem   manual_portable.tex -> manual_portable.pdf (se queda aqui; lo usa crear_portable.bat)
+rem FisGraf y FisErr (c) 2026 Martin Alvarez de Araya. Uso gratuito citando al autor (ver LICENSE).
+rem Compila los manuales y deja cada uno en su parte:
+rem   manual.tex          -> manual\Manual_completo.pdf  (FisGraf, FisErr y la parte de IA)
+rem   manual_portable.tex -> graficos\Manual_FisGraf.pdf (FisGraf y FisErr, sin la parte de IA)
+rem   manual_fiserr.tex   -> errores\Manual_FisErr.pdf   (solo FisErr)
 rem Usa lualatex directamente (latexmk necesita Perl). Dos pasadas: el indice y las
 rem referencias se resuelven en la segunda.
-rem Con el argumento "sinpausa" no espera una tecla al terminar (lo usa crear_portable.bat).
+rem Con el argumento "sinpausa" no espera una tecla al terminar (lo usa crear_distribucion.bat).
 cd /d "%~dp0"
 for %%M in (manual manual_fiserr manual_portable) do (
     lualatex -interaction=nonstopmode -halt-on-error %%M.tex >nul
@@ -13,10 +14,11 @@ for %%M in (manual manual_fiserr manual_portable) do (
     lualatex -interaction=nonstopmode -halt-on-error %%M.tex >nul
     if errorlevel 1 goto fallo
 )
-copy /y manual.pdf "..\MANUAL.pdf" >nul
-copy /y manual_fiserr.pdf "..\MANUAL_FisErr.pdf" >nul
+copy /y manual.pdf "Manual_completo.pdf" >nul
+copy /y manual_portable.pdf "..\graficos\Manual_FisGraf.pdf" >nul
+copy /y manual_fiserr.pdf "..\errores\Manual_FisErr.pdf" >nul
 del /q *.aux *.log *.toc *.out 2>nul
-echo Listo: MANUAL.pdf y MANUAL_FisErr.pdf
+echo Listo: manual\Manual_completo.pdf, graficos\Manual_FisGraf.pdf y errores\Manual_FisErr.pdf
 if /i not "%~1"=="sinpausa" pause
 exit /b 0
 

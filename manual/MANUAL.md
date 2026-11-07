@@ -1,11 +1,13 @@
 # Manual de uso
 
+**FisGraf y FisErr © 2026 Martín Álvarez de Araya.** Uso gratuito citando siempre al autor (sección 8).
+
 Este manual explica cómo usar las tres herramientas del proyecto:
 
 | | Programa | Para qué |
 |---|---|---|
-| <img src="graficos/assets/logo.png" width="40"> | **FisGraf** | Gráficos de datos con ajustes, errores y tipografía LaTeX. |
-| <img src="errores/assets/logo.png" width="40"> | **FisErr** | Calculadora de propagación de errores. |
+| <img src="../graficos/assets/logo.png" width="40"> | **FisGraf** | Gráficos de datos con ajustes, errores y tipografía LaTeX. |
+| <img src="../errores/assets/logo.png" width="40"> | **FisErr** | Calculadora de propagación de errores. |
 | ⌨ | **fisgraf-cli** | Las mismas funciones por línea de comandos y como servidor MCP, para que la use una IA. |
 
 **Contenido**
@@ -17,6 +19,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 5. [Usarlo con una IA](#5-usarlo-con-una-ia)
 6. [Referencia rápida](#6-referencia-rápida)
 7. [Problemas frecuentes](#7-problemas-frecuentes)
+8. [Autor, licencia y cómo citar](#8-autor-licencia-y-cómo-citar)
 
 ---
 
@@ -36,7 +39,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 | FisGraf | `graficos\FisGraf.exe` | doble clic en `graficos\crear_ejecutable.bat` |
 | FisErr | `errores\FisErr.exe` | doble clic en `errores\crear_ejecutable.bat` |
 
-Para llevarlos a otro computador usa la carpeta `portable` (se crea con `crear_portable.bat`): sus `.exe` no necesitan instalar nada. Para un acceso directo: clic derecho sobre el `.exe` → *Enviar a* → *Escritorio*.
+Para llevarlos a otro computador usa la carpeta `portable` (se crea con `graficosear_portable.bat` y `erroresear_portable.bat`, o se descarga ya lista de la página de descargas): sus `.exe` no necesitan instalar nada. Para un acceso directo: clic derecho sobre el `.exe` → *Enviar a* → *Escritorio*.
 
 ### Convenciones de este manual
 
@@ -367,7 +370,7 @@ Los cálculos se guardan como `.fiserr.json`, que puede contener varios. Si hay 
 
 Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve **JSON**.
 
-**Dónde conseguirlo:** `fisgraf-cli.exe` está en la página de descargas del repositorio. También puedes compilarlo con `cargo build --release -p fisgraf --bin fisgraf-cli` (queda en `target\release\`). Con `fisgraf-cli mcp` funciona como servidor MCP (sección 5).
+**Dónde conseguirlo:** `IA_fisgraf-cli.exe` está en la página de descargas del repositorio. También puedes compilarlo con `cargo build --release -p fisgraf-cli` (queda en `target\release\`). Con `fisgraf-cli mcp` funciona como servidor MCP (sección 5).
 
 | Comando | Qué hace |
 |---|---|
@@ -437,7 +440,7 @@ fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos_f
 | `--salida DIR` | Carpeta de salida (si no, junto al proyecto). |
 | `--dpi N` | Resolución del PNG. |
 
-El proyecto es el mismo `.fisgraf.json` que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal, o escribirlo a mano. `fisgraf-cli plantilla grafico` da un proyecto mínimo, y el formato completo está en `plugin/skills/fisgraf/referencia.md`.
+El proyecto es el mismo `.fisgraf.json` que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal, o escribirlo a mano. `fisgraf-cli plantilla grafico` da un proyecto mínimo, y el formato completo está en `ia/claude/skills/fisgraf/referencia.md`.
 
 ---
 
@@ -454,9 +457,15 @@ La IA informará los resultados (con χ²_red y R² cuando corresponda) y te ent
 
 | Dónde | Cómo se instala |
 |---|---|
+| **Todas: Claude Desktop, Codex y Gemini CLI** | En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/ia/instalar.ps1 \| iex`. El instalador:<br>• descarga la herramienta en `%USERPROFILE%\.fisgraf\`;<br>• la registra en las apps que encuentre instaladas;<br>• guarda antes una copia `.bak` de cada configuración.<br>Reinicia la app después. |
 | **Claude Code** (terminal o pestaña *Code*) | Plugin: `/plugin marketplace add malvarezdam/FisGraf-FisErr` y después `/plugin install fisgraf@fisgraf-fiserr`. La primera vez descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`. |
-| **Un solo proyecto de Claude Code** | Descomprime `FisGraf-para-Claude.zip` (de la página de descargas) en la raíz del proyecto: queda `.claude\skills\fisgraf\` con el `.exe` incluido. |
-| **Claude Desktop, Cursor, VS Code y otras** | Servidor MCP. En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/instalar.ps1 \| iex`. Descarga la herramienta y, si tienes Claude Desktop, la registra; reinícialo después. Para otras apps, el servidor es `fisgraf-cli.exe` con el argumento `mcp`. |
+| **Un solo proyecto de Claude Code** | Descomprime `IA_Claude.zip` (de la página de descargas) en la raíz del proyecto: queda `.claude\skills\fisgraf\` con el `.exe` incluido. |
+| **ChatGPT** | Con **Codex**, el agente de OpenAI incluido en ChatGPT Plus, Pro, Business y Edu. Usa el instalador, o `IA_ChatGPT-Codex.zip`: trae `config.toml` para `%USERPROFILE%\.codex\` y `AGENTS.md` con las instrucciones. El chat web de ChatGPT no puede ejecutar programas en tu computador. |
+| **Gemini** | Con **Gemini CLI**. Usa el instalador, o descomprime `IA_Gemini.zip` y ejecuta `gemini extensions install <carpeta fisgraf>`. El chat web de Gemini no puede ejecutar programas en tu computador. |
+| **Cursor, VS Code y otras** | Servidor MCP: `IA_fisgraf-cli.exe` con el argumento `mcp`. |
+
+Al usar la herramienta, la IA menciona que los resultados se hicieron con FisGraf, de Martín Álvarez de Araya. Cítalo también en tus informes (sección 8).
+
 
 Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills\fisgraf\` del proyecto, o quita la entrada `fisgraf` de la configuración MCP.
 
@@ -536,3 +545,24 @@ Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills
 | La leyenda o el cuadro tapan los datos | Cambia su posición en *Estilo*. Con *Personalizada* puedes ubicarlos exactamente. |
 | «Parámetros en la ecuación: …» | Cambiaste la ecuación: pulsa **Actualizar parámetros** (o **Detectar variables** en FisErr). |
 | El Excel cambió y no se ve | **Datos → Recargar**. |
+
+---
+
+## 8. Autor, licencia y cómo citar
+
+FisGraf, FisErr y fisgraf-cli son obra de **Martín Álvarez de Araya** (© 2026, todos los derechos reservados).
+
+- **Uso gratuito** para cualquier fin (personal, académico, docente, de investigación o profesional): nadie debe pagar por usarlo.
+- **Cita obligatoria:** todo uso, y todo informe, artículo, tesis o presentación con resultados o gráficos hechos con él, debe citar al autor:
+
+  > Álvarez de Araya, M. (2026). *FisGraf y FisErr* (v1.0) [Software]. https://github.com/malvarezdam/FisGraf-FisErr
+
+  En las apps: **Ayuda → Acerca de → Copiar cita**.
+- **Prohibido** sin permiso escrito del autor:
+  - venderlo o cobrar por él;
+  - presentarlo como propio;
+  - copiar, modificar o redistribuir su código fuente, o crear obras derivadas;
+  - usarlo para entrenar modelos de inteligencia artificial.
+- Las versiones oficiales se pueden compartir sin cambios y de forma gratuita, junto con su archivo `LICENSE`.
+
+El texto completo está en [LICENSE](../LICENSE).

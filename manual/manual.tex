@@ -67,6 +67,7 @@
 \fi
 \fancyhead[R]{\small\color{texto2}\leftmark}
 \fancyfoot[C]{\small\thepage}
+\fancyfoot[R]{\scriptsize\color{texto2}© 2026 Martín Álvarez de Araya}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 
@@ -105,7 +106,10 @@
   {\color{naranja}\rule{0.55\linewidth}{1.5pt}\par}
   \vspace{0.6cm}
   {\large Calculadora de propagación de errores:\\ el valor final con su error y la función del error\par}
+  \vspace{1.2cm}
+  {\large\bfseries Martín Álvarez de Araya\par}
   \vfill
+  {\small\color{texto2}© 2026 Martín Álvarez de Araya. Todos los derechos reservados.\\ Uso gratuito citando al autor (sección~\ref{sec:licencia}).\par}
 \end{titlepage}
 \else
 \begin{titlepage}
@@ -121,13 +125,16 @@
   {\color{naranja}\rule{0.55\linewidth}{1.5pt}\par}
   \vspace{0.6cm}
   {\large Gráficos de datos de física, ajustes de modelos\\ y propagación de errores con calidad LaTeX\par}
+  \vspace{1.2cm}
+  {\large\bfseries Martín Álvarez de Araya\par}
   \vfill
   \begin{tabular}{@{}l@{\quad}p{9cm}@{}}
     \textbf{\color{azul}FisGraf} & Gráficos desde Excel o CSV con ajustes, errores, $R^2$ y residuos.\\[3pt]
     \textbf{\color{verde}FisErr} & Calculadora de errores: valor final con su error y la función del error.\\[3pt]
     \filacli
-  \end{tabular}
-  \vspace{1.5cm}
+  \end{tabular}\par
+  \vspace{1.2cm}
+  {\small\color{texto2}© 2026 Martín Álvarez de Araya. Todos los derechos reservados.\\ Uso gratuito citando al autor (sección~\ref{sec:licencia}).\par}
 \end{titlepage}
 \fi
 
@@ -175,7 +182,7 @@ FisGraf & \code{graficos\bs FisGraf.exe} & doble clic en \code{graficos\bs crear
 FisErr & \code{errores\bs FisErr.exe} & doble clic en \code{errores\bs crear\_ejecutable.bat}\\\bottomrule
 \end{tabularx}
 
-Para llevarlos a otro computador usa la carpeta \code{portable} (se crea con \code{crear\_portable.bat}): sus \code{.exe} no necesitan instalar nada. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
+Para llevarlos a otro computador, descarga las versiones portables de la página de descargas (o créalas con \code{graficos\bs crear\_portable.bat} y \code{errores\bs crear\_portable.bat}): sus \code{.exe} no necesitan instalar nada. Para crear un acceso directo: clic derecho sobre el \code{.exe} $\rightarrow$ \menu{Enviar a} $\rightarrow$ \menu{Escritorio}.
 \fi
 
 \subsection{Convenciones}
@@ -506,7 +513,7 @@ Los cálculos se guardan como \code{.fiserr.json}, que puede contener varios. Si
 % ------------------------------------------------------------------ 4
 \section{fisgraf-cli}
 
-Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve \textbf{JSON}. \code{fisgraf-cli.exe} está en la página de descargas del repositorio. También se puede compilar con \code{cargo build --release -p fisgraf --bin fisgraf-cli} (queda en \code{target\bs release}). Con \code{fisgraf-cli mcp} funciona como servidor MCP (sección~\ref{sec:ia}).
+Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve \textbf{JSON}. \code{IA\_fisgraf-cli.exe} está en la página de descargas del repositorio. También se puede compilar con \code{cargo build --release -p fisgraf-cli} (queda en \code{target\bs release}). Con \code{fisgraf-cli mcp} funciona como servidor MCP (sección~\ref{sec:ia}).
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
 \textbf{Comando} & \textbf{Qué hace}\\\midrule
@@ -574,7 +581,7 @@ fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos -
 \code{--dpi N} & Resolución del PNG.\\
 \end{opciones}
 
-El proyecto es el mismo \code{.fisgraf.json} que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal. \code{fisgraf-cli plantilla grafico} da un proyecto mínimo, y el formato completo está en \code{plugin/skills/fisgraf/referencia.md}.
+El proyecto es el mismo \code{.fisgraf.json} que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal. \code{fisgraf-cli plantilla grafico} da un proyecto mínimo, y el formato completo está en \code{ia/claude/skills/fisgraf/referencia.md}.
 
 % ------------------------------------------------------------------ 5
 \section{Usarlo con una IA}\label{sec:ia}
@@ -583,9 +590,14 @@ Una IA puede usar \code{fisgraf-cli} como herramienta: obtiene los mismos númer
 
 \begin{opciones}
 Claude Code (terminal o pestaña \emph{Code}) & Plugin: \code{/plugin marketplace add malvarezdam/FisGraf-FisErr} y luego \code{/plugin install fisgraf@fisgraf-fiserr}. La primera vez descarga \code{fisgraf-cli.exe} en \code{\%USERPROFILE\%\bs .fisgraf}.\\
-Un solo proyecto de Claude Code & Descomprime \code{FisGraf-para-Claude.zip} (página de descargas) en la raíz del proyecto: queda \code{.claude\bs skills\bs fisgraf} con el \code{.exe} incluido.\\
-Claude Desktop, Cursor, VS Code y otras & Servidor MCP: ejecuta \code{instalar.ps1} (ver el README del repositorio). Descarga la herramienta y la registra en Claude Desktop. En otras apps, el servidor es \code{fisgraf-cli.exe} con el argumento \code{mcp}.\\
+Un solo proyecto de Claude Code & Descomprime \code{IA\_Claude.zip} (página de descargas) en la raíz del proyecto: queda \code{.claude\bs skills\bs fisgraf} con el \code{.exe} incluido.\\
+ChatGPT & Con \textbf{Codex}, el agente de OpenAI incluido en ChatGPT Plus, Pro, Business y Edu. Usa el instalador, o \code{IA\_ChatGPT-Codex.zip}, que trae \code{config.toml} para \code{\%USERPROFILE\%\bs .codex} y las instrucciones \code{AGENTS.md}.\\
+Gemini & Con \textbf{Gemini CLI}. Usa el instalador, o descomprime \code{IA\_Gemini.zip} e instala la carpeta \code{fisgraf} con \code{gemini extensions install}.\\
+Claude Desktop, Codex y Gemini CLI a la vez & Ejecuta \code{ia/instalar.ps1} (ver el README del repositorio). Descarga la herramienta y la registra en las apps que encuentre, guardando antes una copia \code{.bak} de cada configuración.\\
+Cursor, VS Code y otras & Servidor MCP: \code{IA\_fisgraf-cli.exe} con el argumento \code{mcp}.\\
 \end{opciones}
+
+Los chats web de ChatGPT y de Gemini no pueden ejecutar programas en tu computador; por eso se usan Codex y Gemini CLI. Al usar la herramienta, la IA menciona que los resultados se hicieron con FisGraf, de Martín Álvarez de Araya.
 
 Basta con pedir lo que necesitas, por ejemplo:
 
@@ -692,5 +704,29 @@ El Excel cambió y no se ve & \menu{Datos $\rightarrow$ Recargar}.\\
 Windows avisa «Windows protegió su PC» & El \code{.exe} no está firmado digitalmente: pulsa \menu{Más información $\rightarrow$ Ejecutar de todas formas}.\\\bottomrule
 \end{tabularx}
 \fi
+
+% ------------------------------------------------------------------ 8
+\section{Autor, licencia y cómo citar}\label{sec:licencia}
+
+FisGraf, FisErr y fisgraf-cli son obra de \textbf{Martín Álvarez de Araya} (© 2026, todos los derechos reservados).
+
+\begin{itemize}
+  \item \textbf{Uso gratuito} para cualquier fin (personal, académico, docente, de investigación o profesional): nadie debe pagar por usarlo.
+  \item \textbf{Cita obligatoria:} todo uso, y todo informe, artículo, tesis o presentación con resultados o gráficos hechos con él, debe citar al autor:
+  \begin{center}
+  Álvarez de Araya, M. (2026). \emph{FisGraf y FisErr} (v1.0) [Software].\\ \url{https://github.com/malvarezdam/FisGraf-FisErr}
+  \end{center}
+  En las apps: \menu{Ayuda $\rightarrow$ Acerca de $\rightarrow$ Copiar cita}.
+  \item \textbf{Prohibido} sin permiso escrito del autor:
+  \begin{itemize}
+    \item venderlo o cobrar por él;
+    \item presentarlo como propio;
+    \item copiar, modificar o redistribuir su código fuente, o crear obras derivadas;
+    \item usarlo para entrenar modelos de inteligencia artificial.
+  \end{itemize}
+  \item Las versiones oficiales se pueden compartir sin cambios y de forma gratuita, junto con su archivo \code{LICENSE}.
+\end{itemize}
+
+El texto completo de la licencia está en el archivo \code{LICENSE} del repositorio.
 
 \end{document}

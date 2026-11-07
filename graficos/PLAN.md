@@ -386,3 +386,14 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - `instalar.ps1` (ASCII): descarga el `.exe` en `~/.fisgraf/` y registra el servidor en Claude Desktop (versión normal o de Microsoft Store), con respaldo `.bak`. `AGENTS.md` sirve para otros agentes y `.gitattributes` fuerza CRLF en los scripts de Windows.
   - Manuales: la sección 5 pasó a ser «Usarlo con una IA».
   - El repositorio se renombró a `malvarezdam/FisGraf-FisErr` y el marketplace a `fisgraf-fiserr` (`/plugin install fisgraf@fisgraf-fiserr`). La Release v1.0.0 se volvió a publicar con los enlaces nuevos.
+- [x] **Organización en tres partes, ChatGPT y Gemini, y derechos de autor** (pedido del usuario, 2026-11-07)
+  - **Partes:** `graficos/` (FisGraf y la biblioteca), `errores/` (FisErr) e `ia/`.
+    - `fisgraf-cli` pasó a ser su propio paquete en `ia/fisgraf-cli/`, con sus pruebas. Ya no es un binario de `fisgraf`.
+    - El plugin de Claude está en `ia/claude/`; `marketplace.json` apunta ahí.
+    - Los manuales quedan en cada parte: `graficos/Manual_FisGraf.pdf`, `errores/Manual_FisErr.pdf` y `manual/Manual_completo.pdf`. Se llaman `Manual_*.pdf` porque Windows no distingue `MANUAL.pdf` de `manual.pdf`.
+  - **Distribución separada:** `graficos/crear_portable.bat`, `errores/crear_portable.bat` e `ia/crear_paquetes.bat`, más `crear_distribucion.bat`, que los llama a todos. La Release tiene `Graficos_*`, `Errores_*` e `IA_*`.
+  - **ChatGPT y Gemini:** los chats web no ejecutan programas locales, así que se usan Codex (`ia/chatgpt/config.toml`) y Gemini CLI (extensión `ia/gemini/gemini-extension.json`, con el `.exe` dentro y `${extensionPath}`). `ia/guia_ia.md` es la guía común y se copia como `AGENTS.md` y `GEMINI.md`. `ia/instalar.ps1` registra el servidor en Claude Desktop, Gemini CLI (`settings.json`) y Codex (`config.toml`), con respaldo `.bak`. No se pudo probar dentro de Gemini CLI ni de Codex, porque no están instalados aquí.
+  - **Derechos:** `LICENSE` propia a nombre de Martín Álvarez de Araya: uso gratuito con cita obligatoria; prohibido vender, apropiarse, derivar y entrenar IA.
+    - Avisos de autoría en las cabeceras, en Cargo (`[workspace.package]`, versión 1.0.0), en plugin.json, en las guías de IA y en las instrucciones MCP.
+    - Ventana **Ayuda → Acerca de** compartida (`gui/about.rs`) con cita copiable. Prueba `about_window_shows_author_and_license`.
+    - La sección 8 del manual trata la licencia y la cita.

@@ -1,0 +1,73 @@
+FisGraf y FisErr
+Copyright (c) 2026 Martín Álvarez de Araya (GitHub: malvarezdam)
+https://github.com/malvarezdam/FisGraf-FisErr
+
+Todos los derechos reservados, salvo los permisos que se conceden expresamente
+a continuación.
+
+LICENCIA DE USO GRATUITO CON ATRIBUCIÓN OBLIGATORIA
+
+1. Definiciones
+   «Software»: FisGraf, FisErr, fisgraf-cli y todo el contenido de este
+   repositorio y de sus versiones publicadas: código fuente, ejecutables,
+   documentación, manuales, guías e instrucciones para inteligencia
+   artificial, logotipos, ejemplos y datos.
+   «Autor»: Martín Álvarez de Araya.
+
+2. Uso gratuito
+   Se permite a cualquier persona descargar, instalar y usar el Software,
+   incluidos los resultados, cálculos y gráficos que genere, para cualquier
+   fin: personal, académico, docente, de investigación o profesional.
+   Nadie debe pagar por usarlo.
+
+3. Atribución obligatoria
+   Todo uso del Software y de sus resultados debe citar al Autor. Por
+   ejemplo, en un informe, artículo, tesis, presentación, sitio web o
+   publicación que use cálculos o gráficos hechos con él:
+
+       Álvarez de Araya, M. (2026). FisGraf y FisErr (v1.0) [Software].
+       https://github.com/malvarezdam/FisGraf-FisErr
+
+   No se deben eliminar ni alterar los avisos de autoría y de derechos de
+   autor del Software.
+
+4. Prohibiciones
+   Sin autorización previa y por escrito del Autor, queda prohibido:
+   a) Vender, alquilar, sublicenciar o cobrar de cualquier forma por el
+      Software o por el acceso a él, incluso como parte de otro producto o
+      servicio.
+   b) Presentar el Software, o cualquier parte de él, como obra propia;
+      atribuirlo a otra persona; u ocultar su autoría.
+   c) Copiar, modificar, traducir o redistribuir el código fuente, o crear
+      obras derivadas de él o productos equivalentes basados en su código,
+      su diseño o su documentación.
+   d) Usar el Software, su código o su documentación para entrenar, ajustar
+      o evaluar modelos de inteligencia artificial, o incorporarlos a
+      conjuntos de datos con ese fin.
+
+   Usar el Software como herramienta —por ejemplo, que un asistente de
+   inteligencia artificial lo ejecute para ayudar a un usuario— está
+   permitido según los puntos 2 y 3, siempre que se cite al Autor.
+
+5. Redistribución de las versiones oficiales
+   Se pueden compartir sin cambios, y de forma gratuita, los archivos
+   publicados en las Releases del repositorio, conservando este archivo
+   LICENSE y los avisos de autoría.
+
+6. Sin garantía
+   El Software se entrega «tal cual», sin garantías de ningún tipo. El Autor
+   no responde por daños ni por errores en los resultados derivados de su
+   uso. Comprueba los resultados importantes.
+
+Para cualquier permiso no incluido aquí, contacta al Autor a través de
+https://github.com/malvarezdam.
+
+-------------------------------------------------------------------------------
+English summary (the Spanish text above prevails):
+Copyright (c) 2026 Martín Álvarez de Araya. All rights reserved except as
+granted above. Free to use for any purpose, at no cost; every use must credit
+the author. Selling or charging for it, claiming it as your own, copying,
+modifying or redistributing the source code, creating derivative works, and
+using it to train or evaluate AI models are prohibited without written
+permission. Unmodified official releases may be shared free of charge with
+this notice. Provided "as is", without warranty.

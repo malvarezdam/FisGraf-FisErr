@@ -1,98 +1,66 @@
 # FisGraf y FisErr
 
-Análisis de datos de física con calidad de publicación: **gráficos con ajustes y barras de error en LaTeX**, y **propagación de errores** según la GUM. La lógica numérica está escrita en Rust y validada con los datos certificados del NIST.
+**© 2026 Martín Álvarez de Araya.** Todos los derechos reservados. El uso es **gratuito** y siempre se debe **citar al autor**. Está prohibido venderlo, presentarlo como propio, copiar o modificar su código y usarlo para entrenar IA. Ver [LICENSE](LICENSE).
 
-| | Para qué |
-|---|---|
-| ![FisGraf](graficos/assets/logo.png) **FisGraf** | Gráficos desde Excel o CSV: varias series, ajustes de modelos (seis métodos), incertidumbres de los parámetros (cinco métodos), R², residuos y salida en LaTeX/pgfplots (PDF, PNG, SVG, TikZ). Incluye una calculadora de propagación de errores. |
-| ![FisErr](errores/assets/logo.png) **FisErr** | Calculadora de errores: ecuación teórica, mediciones con su error y constantes → valor final con su error y la función del error, con cinco métodos (derivadas parciales, segundo orden, Monte Carlo, Kragten y cota máxima). |
-| **fisgraf-cli** | Las mismas funciones por línea de comandos (JSON) y como **servidor MCP**, para que una IA las use como herramienta. |
+Análisis de datos de física con calidad de publicación: **gráficos con ajustes y barras de error en LaTeX**, y **propagación de errores** según la GUM. La lógica numérica está escrita en Rust y validada con los datos certificados del NIST. El proyecto tiene tres partes:
+
+| Parte | Carpeta | Para qué |
+|---|---|---|
+| ![FisGraf](graficos/assets/logo.png) **Gráficos: FisGraf** | [`graficos/`](graficos/README.md) | Gráficos desde Excel o CSV:<br>• varias series;<br>• ajustes de modelos (seis métodos) e incertidumbres de los parámetros (cinco métodos);<br>• R² y residuos;<br>• salida en LaTeX/pgfplots (PDF, PNG, SVG, TikZ);<br>• calculadora de errores incluida. |
+| ![FisErr](errores/assets/logo.png) **Errores: FisErr** | [`errores/`](errores/README.md) | Calculadora de errores: ecuación teórica, mediciones con su error y constantes → valor final con su error y la función del error. Tiene cinco métodos: derivadas parciales, segundo orden, Monte Carlo, Kragten y cota máxima. |
+| 🤖 **IA** | [`ia/`](ia/README.md) | Las mismas funciones como herramienta para **Claude**, **ChatGPT** (Codex) y **Gemini** (Gemini CLI), mediante línea de comandos y servidor MCP. |
 
 <p align="center"><img src="graficos/datos_de_prueba/graficos/01_caida_libre.png" width="560" alt="Ejemplo de gráfico de FisGraf: caída libre con ajuste y barras de error"></p>
 
 ## ⬇️ Descargas
 
-Todo está en la **[última versión publicada (Releases)](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest)**. Son programas para Windows 10 u 11 que no necesitan instalación: descomprimes y haces doble clic.
+Todo está en la **[versión 1.0 (Releases)](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest)**. Son programas para Windows 10 u 11 que no necesitan instalación: descomprimes y haces doble clic.
 
-| Archivo | Qué es |
-|---|---|
-| **[FisGraf-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-portable.zip)** | FisGraf (gráficos y errores) con su manual, proyectos de ejemplo y 8 experimentos de prueba. |
-| **[FisErr-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisErr-portable.zip)** | FisErr (solo errores) con su manual. |
-| **[FisGraf-para-Claude.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-para-Claude.zip)** | La skill para Claude con la herramienta incluida (ver [Para IA](#-para-ia)). |
-| **[fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/fisgraf-cli.exe)** | La herramienta de línea de comandos y servidor MCP, sola. |
+| Parte | Archivo | Qué es |
+|---|---|---|
+| **Gráficos** | **[Graficos_FisGraf-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/Graficos_FisGraf-portable.zip)** | FisGraf con su manual, proyectos de ejemplo y 8 experimentos de prueba. |
+| **Errores** | **[Errores_FisErr-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/Errores_FisErr-portable.zip)** | FisErr con su manual. |
+| **IA** | **[IA_Claude.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/IA_Claude.zip)** | Skill para Claude Code con la herramienta incluida. |
+| | **[IA_ChatGPT-Codex.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/IA_ChatGPT-Codex.zip)** | Herramienta y configuración para Codex (ChatGPT). |
+| | **[IA_Gemini.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/IA_Gemini.zip)** | Extensión para Gemini CLI con la herramienta incluida. |
+| | **[IA_fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/IA_fisgraf-cli.exe)** | La herramienta sola (línea de comandos y servidor MCP), para cualquier otra app. |
 
 - FisGraf necesita [MiKTeX](https://miktex.org) (o TeX Live) solo para la vista LaTeX y para exportar los gráficos. FisErr no lo necesita.
 - Si Windows muestra «Windows protegió su PC», pulsa *Más información → Ejecutar de todas formas* (los `.exe` no están firmados).
 
-**📖 Manuales:** [MANUAL.pdf](MANUAL.pdf) (completo), [MANUAL_FisErr.pdf](MANUAL_FisErr.pdf) (solo FisErr) y [MANUAL.md](MANUAL.md) (para leer en GitHub).
+**📖 Manuales:**
+- [Manual_FisGraf.pdf](graficos/Manual_FisGraf.pdf): FisGraf y FisErr.
+- [Manual_FisErr.pdf](errores/Manual_FisErr.pdf): solo FisErr.
+- [Manual_completo.pdf](manual/Manual_completo.pdf): incluye la parte de IA.
+- [MANUAL.md](manual/MANUAL.md): para leer en GitHub.
 
 ## 🤖 Para IA
 
-Una IA puede usar FisGraf como herramienta para calcular errores, ajustar modelos y crear gráficos. Obtiene los mismos números que las aplicaciones, redondeados según la GUM, y los gráficos con el mismo estilo LaTeX. Hay tres formas de conectarla:
+Detalles en [ia/README.md](ia/README.md). En resumen:
 
-### Claude Code: plugin (recomendado)
+| IA | Instalación |
+|---|---|
+| **Todas** (Claude Desktop, Codex, Gemini CLI) | En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/ia/instalar.ps1 \| iex` |
+| **Claude Code** | `/plugin marketplace add malvarezdam/FisGraf-FisErr` y luego `/plugin install fisgraf@fisgraf-fiserr` |
+| **ChatGPT** | Con Codex: ver [ia/chatgpt](ia/chatgpt/LEEME.md) |
+| **Gemini** | Con Gemini CLI: ver [ia/gemini](ia/gemini/LEEME.md) |
 
-En Claude Code (terminal, o pestaña *Code* de la app de escritorio):
-
-```text
-/plugin marketplace add malvarezdam/FisGraf-FisErr
-/plugin install fisgraf@fisgraf-fiserr
-```
-
-Instala la skill **fisgraf**. La primera vez que Claude la use, descarga `fisgraf-cli.exe` (2,8 MB) en `%USERPROFILE%\.fisgraf\`. Después basta con pedirle cosas como:
-
+Después basta con pedirle a la IA cosas como:
 - «calcula el error de g = 4π²L/T² con L = 1,000 ± 0,001 m y T = 2,007 ± 0,005 s»
 - «ajusta los datos de medidas.xlsx a una exponencial y dame τ con su error»
 - «haz un gráfico con barras de error y R² de este CSV»
 
-**Alternativa sin plugin:** descomprime [FisGraf-para-Claude.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/FisGraf-para-Claude.zip) en la raíz de un proyecto (queda `.claude\skills\fisgraf\`, con el `.exe` incluido).
+## 📝 Cómo citar
 
-### Claude Desktop, Cursor, VS Code y otras apps: servidor MCP
+Si usas FisGraf o FisErr en un informe, artículo, tesis o presentación, cítalo así:
 
-`fisgraf-cli mcp` es un servidor [MCP](https://modelcontextprotocol.io) con cinco herramientas: `propagar_errores`, `ajustar_modelo`, `generar_grafico` (devuelve también el PNG para que la IA lo vea), `plantilla` y `referencia_proyecto`. Funciona también en el chat de Claude Desktop, donde una skill no puede ejecutar programas.
+> Álvarez de Araya, M. (2026). *FisGraf y FisErr* (v1.0) [Software]. https://github.com/malvarezdam/FisGraf-FisErr
 
-Instalación automática, en PowerShell:
-
-```powershell
-irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/instalar.ps1 | iex
-```
-
-[`instalar.ps1`](instalar.ps1) hace lo siguiente:
-
-1. Descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`.
-2. Si tienes Claude Desktop, lo registra en su configuración (guarda antes una copia `.bak`). Reinicia Claude Desktop después.
-3. Muestra la configuración para otras aplicaciones.
-
-Instalación manual: descarga [fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/fisgraf-cli.exe) y agrega a la configuración MCP de tu aplicación:
-
-```json
-{
-  "mcpServers": {
-    "fisgraf": { "command": "C:\\ruta\\a\\fisgraf-cli.exe", "args": ["mcp"] }
-  }
-}
-```
-
-En Claude Code también se puede registrar así: `claude mcp add --scope user fisgraf -- C:\ruta\a\fisgraf-cli.exe mcp`.
-
-### Cualquier agente: línea de comandos
-
-```bash
-fisgraf-cli errores  entrada.json            # propagación de errores
-fisgraf-cli ajustar  entrada.json            # ajuste de un modelo (datos en JSON, CSV o Excel)
-fisgraf-cli grafico  proyecto.fisgraf.json --formatos pdf,png
-fisgraf-cli plantilla errores|ajustar|grafico
-```
-
-Entrada y salida en JSON. El formato está en [SKILL.md](plugin/skills/fisgraf/SKILL.md) y en [referencia.md](plugin/skills/fisgraf/referencia.md). [AGENTS.md](AGENTS.md) resume cómo usarlo para agentes de programación (Codex, Copilot, Cursor…).
+Las apps tienen el botón **Ayuda → Acerca de → Copiar cita**.
 
 ## 🛠️ Compilar desde el código
 
 Requisitos: [Rust](https://rustup.rs), y [MiKTeX](https://miktex.org) o TeX Live para los gráficos.
-
-```bash
-git clone https://github.com/malvarezdam/FisGraf-FisErr.git
-```
 
 ```bash
 cargo run --release -p fisgraf
@@ -102,25 +70,25 @@ cargo run --release -p fisgraf
 cargo run --release -p fiserr
 ```
 
+```bash
+cargo build --release -p fisgraf-cli
+```
+
 | Script (doble clic) | Qué hace |
 |---|---|
-| `graficos\crear_ejecutable.bat` · `errores\crear_ejecutable.bat` | Compila `FisGraf.exe` / `FisErr.exe` en su carpeta. |
-| `crear_portable.bat` | Carpeta `portable\` y `dist\FisGraf-portable.zip`, `dist\FisErr-portable.zip`. |
-| `crear_skill_portable.bat` | `dist\FisGraf-para-Claude.zip` y `dist\fisgraf-cli.exe`. |
-| `crear_distribucion.bat` | Todo lo anterior: los archivos de una Release. |
+| `graficos\crear_portable.bat` | `dist\Graficos_FisGraf-portable.zip`. |
+| `errores\crear_portable.bat` | `dist\Errores_FisErr-portable.zip`. |
+| `ia\crear_paquetes.bat` | `dist\IA_*.zip` e `IA_fisgraf-cli.exe`. |
+| `crear_distribucion.bat` | Todo lo anterior, con los manuales: los archivos de una Release. |
 | `manual\compilar.bat` | Los manuales en PDF. |
 
 | Carpeta | Contenido |
 |---|---|
-| `graficos/` | FisGraf: la biblioteca con toda la lógica, la app y `fisgraf-cli` ([arquitectura e historial](graficos/PLAN.md)). |
+| `graficos/` | FisGraf y la biblioteca con toda la lógica numérica ([arquitectura e historial](graficos/PLAN.md)). |
 | `errores/` | FisErr; usa la lógica de `graficos/`. |
-| `plugin/` | Plugin de Claude Code con la skill `fisgraf`; `.claude-plugin/marketplace.json` publica este repositorio como marketplace. |
-| `manual/` | Fuente LaTeX de los manuales. |
+| `ia/` | `fisgraf-cli` (comandos JSON y servidor MCP) y las integraciones para Claude, ChatGPT y Gemini. |
+| `manual/` | Fuente LaTeX de los manuales y el manual en Markdown. |
 
 ```bash
 cargo test --workspace
-```
-
-```bash
-cargo clippy --workspace --all-targets
 ```

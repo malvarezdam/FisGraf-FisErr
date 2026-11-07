@@ -1,0 +1,23 @@
+FisErr: versión portable
+========================
+
+FisGraf y FisErr © 2026 Martín Álvarez de Araya. Todos los derechos reservados.
+Uso gratuito, citando siempre al autor; prohibido venderlo o presentarlo
+como propio (ver LICENSE).
+Cita: Álvarez de Araya, M. (2026). FisGraf y FisErr (v1.0).
+      https://github.com/malvarezdam/FisGraf-FisErr
+
+Esta carpeta se puede copiar tal cual a un pendrive o a cualquier
+computador con Windows 10 u 11. No hay que instalar nada ni ningún otro
+programa: basta con hacer doble clic en FisErr\FisErr.exe.
+
+  FisErr\FisErr.exe          Calculadora de propagación de errores: ecuación,
+                             mediciones con su error y constantes -> valor
+                             final con su error y la función del error.
+  FisErr\Manual FisErr.pdf   Manual de uso.
+
+Notas
+-----
+- Si Windows muestra "Windows protegió su PC", pulsa "Más información" y
+  luego "Ejecutar de todas formas" (el .exe no está firmado).
+- Para un acceso directo: clic derecho sobre el .exe > Enviar a > Escritorio.

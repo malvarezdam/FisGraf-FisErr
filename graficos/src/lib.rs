@@ -1,3 +1,4 @@
+// FisGraf y FisErr © 2026 Martín Álvarez de Araya. Todos los derechos reservados (ver LICENSE).
 //! FisGraf: gráficos de datos de física con ajuste de modelos, incertidumbres
 //! y salida en LaTeX (pgfplots).
 

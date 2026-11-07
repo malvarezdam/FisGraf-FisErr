@@ -1,3 +1,4 @@
+// FisGraf y FisErr © 2026 Martín Álvarez de Araya. Todos los derechos reservados (ver LICENSE).
 //! FisErr: calculadora de propagación de errores.
 //!
 //! Usa la misma lógica que la pestaña Propagación de FisGraf
@@ -66,6 +67,8 @@ pub struct FisErrApp {
     close_confirmed: bool,
     title: String,
     started: bool,
+    /// Ventana «Acerca de» abierta.
+    pub show_about: bool,
 }
 
 impl Default for FisErrApp {
@@ -82,6 +85,7 @@ impl Default for FisErrApp {
             close_confirmed: false,
             title: String::new(),
             started: false,
+            show_about: false,
         }
     }
 }
@@ -191,6 +195,12 @@ impl FisErrApp {
             });
             ui.menu_button("Ver", |ui| {
                 ui.checkbox(&mut self.file.decimal_comma, "Coma decimal (9,80)");
+            });
+            ui.menu_button("Ayuda", |ui| {
+                if ui.button("Acerca de FisErr…").clicked() {
+                    self.show_about = true;
+                    ui.close();
+                }
             });
         });
     }
@@ -303,6 +313,7 @@ impl FisErrApp {
             });
         });
         self.confirm_modal(ui);
+        fisgraf::gui::about::show(ui, &mut self.show_about, "FisErr", "Calculadora de propagación de errores.");
 
         if ctx.input(|i| i.viewport().close_requested()) && self.is_dirty() && !self.close_confirmed {
             ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);

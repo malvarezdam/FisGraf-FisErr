@@ -1,17 +1,29 @@
 @echo off
-rem Crea todo lo que se publica en la Release de GitHub, en la carpeta dist\:
-rem   FisGraf-portable.zip, FisErr-portable.zip, FisGraf-para-Claude.zip y fisgraf-cli.exe
+rem FisGraf y FisErr (c) 2026 Martin Alvarez de Araya. Uso gratuito citando al autor (ver LICENSE).
+rem Crea en dist\ todo lo que se publica en la Release de GitHub, separado en tres partes:
+rem   Graficos_FisGraf-portable.zip                              (graficos\crear_portable.bat)
+rem   Errores_FisErr-portable.zip                                (errores\crear_portable.bat)
+rem   IA_Claude.zip, IA_ChatGPT-Codex.zip, IA_Gemini.zip,
+rem   IA_fisgraf-cli.exe                                         (ia\crear_paquetes.bat)
 rem Para publicarlos (con GitHub CLI):
 rem   gh release create vX.Y.Z dist\* --title "FisGraf y FisErr vX.Y.Z" --notes "..."
+rem Los scripts se llaman con ruta completa: con NoDefaultCurrentDirectoryInExePath
+rem (lo define Claude Code), cmd no los encuentra por su nombre solo.
 setlocal
 cd /d "%~dp0"
-call "%~dp0crear_portable.bat" sinpausa
+if exist dist rmdir /s /q dist
+echo [Manuales] Compilando...
+call "%~dp0manual\compilar.bat" sinpausa
+if errorlevel 1 echo Se usaran los PDF que ya estan en el repositorio.
+call "%~dp0graficos\crear_portable.bat" sinpausa
 if errorlevel 1 goto fallo
-call "%~dp0crear_skill_portable.bat" sinpausa
+call "%~dp0errores\crear_portable.bat" sinpausa
+if errorlevel 1 goto fallo
+call "%~dp0ia\crear_paquetes.bat" sinpausa
 if errorlevel 1 goto fallo
 echo.
 echo Listo: dist\
-dir /b dist
+dir /b "%~dp0dist"
 if /i not "%~1"=="sinpausa" pause
 exit /b 0
 
