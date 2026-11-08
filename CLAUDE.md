@@ -16,7 +16,7 @@
 | `errores/` | `fiserr` | **FisErr**: calculadora de propagación de errores. Reutiliza `fisgraf::propagation` y `fisgraf::gui::calculator`. |
 | `manual/` | | Fuente LaTeX de los manuales y `MANUAL.md`. |
 
-**Parte de IA (skills, plugin, `fisgraf-cli` y servidor MCP):** ya no está en GitHub porque se vende en otra plataforma. Su copia es `venta/FisGraf_IA_v1.0.zip`, ignorada por git. No la vuelvas a subir al repositorio ni a las Releases.
+**Parte de IA (skills, plugin, `fisgraf-cli` y servidor MCP):** ya no está en GitHub porque la skill se vende en Agensi. Sus copias están en `Skill Graficos y Errores/`, ignorada por git: `FisGraf_IA_v1.0.zip` (todo) y `FisGraf_Agensi_v1.0.zip` (lo que se sube a Agensi, solo texto). No subas ese contenido al repositorio. La única excepción es `IA_fisgraf-cli.exe` en la Release v1.0.0: la skill lo descarga de esa URL fija y comprueba su SHA-256, así que no lo cambies ni lo borres.
 
 ## Comandos
 - **Compilar, probar y revisar:** `cargo build --workspace`, `cargo test --workspace` y `cargo clippy --workspace --all-targets`.

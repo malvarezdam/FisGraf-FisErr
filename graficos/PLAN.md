@@ -404,3 +404,6 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
 - [x] **Parte de IA retirada de GitHub** (pedido del usuario, 2026-11-08)
   - Las skills, el plugin, las integraciones, `fisgraf-cli` y el servidor MCP se venderán en otra plataforma. Su copia es `venta/FisGraf_IA_v1.0.zip`, ignorada por git.
   - El repositorio queda con FisGraf, FisErr y sus manuales. El manual completo se eliminó, y las secciones de IA salieron de los manuales y del README. La versión sigue siendo 1.0.0.
+- [x] **Paquete para Agensi y descarga del programa** (pedido del usuario, 2026-11-08)
+  - Agensi solo entrega texto. El zip lleva `SKILL.md`, `referencia.md`, `LEEME.md`, una licencia de pago y los 8 ejemplos, con los Excel convertidos a CSV.
+  - `IA_fisgraf-cli.exe` volvió a la Release v1.0.0. La skill pide permiso, lo descarga de esa URL fija y comprueba su SHA-256.
