@@ -397,3 +397,7 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
     - Avisos de autoría en las cabeceras, en Cargo (`[workspace.package]`, versión 1.0.0), en plugin.json, en las guías de IA y en las instrucciones MCP.
     - Ventana **Ayuda → Acerca de** compartida (`gui/about.rs`) con cita copiable. Prueba `about_window_shows_author_and_license`.
     - La sección 8 del manual trata la licencia y la cita.
+- [x] **README del repositorio ampliado** (pedido del usuario, 2026-11-08)
+  - Explica cómo usar FisGraf y FisErr, sus funciones y métodos, la sintaxis de las ecuaciones, cómo leer los resultados y los problemas frecuentes.
+  - Sección nueva «Cómo pedirle las cosas a la IA»: qué datos incluir en un prompt, detalles para ajustes y gráficos, y tres prompts de ejemplo. Destaca que `fisgraf-cli` usa por defecto la covarianza escalada por χ²_red.
+  - Los resultados citados como ejemplo se obtuvieron con `fisgraf-cli`.
