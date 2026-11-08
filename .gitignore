@@ -13,3 +13,6 @@
 /manual/manual_fiserr.pdf
 /manual/manual_portable.pdf
 /dist
+
+# Paquetes de IA para vender en otra plataforma (no van en GitHub)
+venta/

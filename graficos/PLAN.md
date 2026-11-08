@@ -401,3 +401,6 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
   - Explica cómo usar FisGraf y FisErr, sus funciones y métodos, la sintaxis de las ecuaciones, cómo leer los resultados y los problemas frecuentes.
   - Sección nueva «Cómo pedirle las cosas a la IA»: qué datos incluir en un prompt, detalles para ajustes y gráficos, y tres prompts de ejemplo. Destaca que `fisgraf-cli` usa por defecto la covarianza escalada por χ²_red.
   - Los resultados citados como ejemplo se obtuvieron con `fisgraf-cli`.
+- [x] **Parte de IA retirada de GitHub** (pedido del usuario, 2026-11-08)
+  - Las skills, el plugin, las integraciones, `fisgraf-cli` y el servidor MCP se venderán en otra plataforma. Su copia es `venta/FisGraf_IA_v1.0.zip`, ignorada por git.
+  - El repositorio queda con FisGraf, FisErr y sus manuales. El manual completo se eliminó, y las secciones de IA salieron de los manuales y del README. La versión sigue siendo 1.0.0.

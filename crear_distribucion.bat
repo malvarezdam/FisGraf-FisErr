@@ -1,10 +1,8 @@
 @echo off
 rem FisGraf y FisErr (c) 2026 Martin Alvarez de Araya. Uso gratuito citando al autor (ver LICENSE).
-rem Crea en dist\ todo lo que se publica en la Release de GitHub, separado en tres partes:
+rem Crea en dist\ todo lo que se publica en la Release de GitHub, separado en dos partes:
 rem   Graficos_FisGraf-portable.zip                              (graficos\crear_portable.bat)
 rem   Errores_FisErr-portable.zip                                (errores\crear_portable.bat)
-rem   IA_Claude.zip, IA_ChatGPT-Codex.zip, IA_Gemini.zip,
-rem   IA_fisgraf-cli.exe                                         (ia\crear_paquetes.bat)
 rem Para publicarlos (con GitHub CLI):
 rem   gh release create vX.Y.Z dist\* --title "FisGraf y FisErr vX.Y.Z" --notes "..."
 rem Los scripts se llaman con ruta completa: con NoDefaultCurrentDirectoryInExePath

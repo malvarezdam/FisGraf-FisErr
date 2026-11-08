@@ -1,12 +1,12 @@
-% Manual de uso de FisGraf, FisErr y fisgraf-cli.
+% Manual de uso de FisGraf y FisErr.
 % Compilar con: manual/compilar.bat  (o: latexmk -lualatex manual.tex)
 % Si antes se define \SoloFisErr, sale el manual reducido de FisErr
 % (lo usa compilar.bat para crear manual_fiserr.pdf).
 \documentclass[11pt,a4paper]{article}
 \newif\iffiserr
 \ifdefined\SoloFisErr \fiserrtrue \fi
-% Si se define \Portable, sale el manual de la carpeta portable: sin fisgraf-cli
-% ni Claude, y con las rutas de esa carpeta (manual_portable.tex).
+% Si se define \Portable, sale el manual de la carpeta portable,
+% con las rutas de esa carpeta (manual_portable.tex).
 \newif\ifportable
 \ifdefined\Portable \portabletrue \fi
 
@@ -55,14 +55,14 @@
 \else\ifportable
   \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf y FisErr}
 \else
-  \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf, FisErr y fisgraf-cli}
+  \fancyhead[L]{\small\color{texto2}Manual de uso · FisGraf y FisErr}
 \fi\fi
 % Filas de tabla que solo van en el manual completo (un \if no puede cruzar un &).
 \ifportable
   \newcommand{\filacli}{}
   \newcommand{\filarust}{}
 \else
-  \newcommand{\filacli}{\textbf{fisgraf-cli} & Las mismas funciones por línea de comandos y como servidor MCP para IA.\\}
+  \newcommand{\filacli}{}
   \newcommand{\filarust}{\textbf{Rust} & Solo para compilar los programas (crear o actualizar los \code{.exe}).\\}
 \fi
 \fancyhead[R]{\small\color{texto2}\leftmark}
@@ -120,7 +120,7 @@
   \vspace{1.5cm}
   {\Huge\bfseries\color{azul} Manual de uso\par}
   \vspace{0.4cm}
-  {\Large FisGraf · FisErr\ifportable\else{} · fisgraf-cli\fi\par}
+  {\Large FisGraf · FisErr\par}
   \vspace{0.3cm}
   {\color{naranja}\rule{0.55\linewidth}{1.5pt}\par}
   \vspace{0.6cm}
@@ -161,7 +161,7 @@ Doble clic en \code{FisErr.exe}. No necesita instalación ni ningún otro progra
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
 \textbf{Programa} & \textbf{Necesario para}\\\midrule
-\textbf{MiKTeX} (o TeX Live) & La vista LaTeX y la exportación de gráficos en FisGraf\ifportable\else, y el comando \code{grafico} de \code{fisgraf-cli}\fi. FisErr no lo necesita.\\
+\textbf{MiKTeX} (o TeX Live) & La vista LaTeX y la exportación de gráficos en FisGraf. FisErr no lo necesita.\\
 \filarust\bottomrule
 \end{tabularx}
 
@@ -509,107 +509,6 @@ Ver & Coma decimal (\code{9,80}) o punto (\code{9.80}).\\\bottomrule
 
 Los cálculos se guardan como \code{.fiserr.json}, que puede contener varios. Si hay cambios sin guardar, el título muestra $\bullet$.
 
-\iffiserr\else\ifportable\else
-% ------------------------------------------------------------------ 4
-\section{fisgraf-cli}
-
-Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve \textbf{JSON}. \code{IA\_fisgraf-cli.exe} está en la página de descargas del repositorio. También se puede compilar con \code{cargo build --release -p fisgraf-cli} (queda en \code{target\bs release}). Con \code{fisgraf-cli mcp} funciona como servidor MCP (sección~\ref{sec:ia}).
-
-\begin{tabularx}{\linewidth}{@{}lX@{}}\toprule
-\textbf{Comando} & \textbf{Qué hace}\\\midrule
-\code{fisgraf-cli errores entrada.json} & Propagación de errores.\\
-\code{fisgraf-cli ajustar entrada.json} & Ajuste de un modelo a datos.\\
-\code{fisgraf-cli grafico proyecto.fisgraf.json} & Genera el gráfico e informa los ajustes.\\
-\code{fisgraf-cli plantilla errores} & JSON de ejemplo (también \code{ajustar}, \code{grafico}).\\
-\code{fisgraf-cli ayuda} & Ayuda resumida.\\\bottomrule
-\end{tabularx}
-
-En lugar de un archivo se puede pasar \code{-} para leer de la entrada estándar. Si algo falla, la respuesta es \code{\{"error": "…"\}} con un mensaje en español.
-
-\subsection{Propagación: \texttt{errores}}
-
-\begin{lstlisting}
-{
-  "nombre": "g", "unidad": "m/s^2",
-  "ecuacion": "4*pi^2*L/T^2",
-  "variables": { "L": { "valor": 1.0, "sigma": 0.0003, "distribucion": "uniforme" },
-                 "T": [2.007, 0.005] },
-  "constantes": {},
-  "metodo": "lineal"
-}
-\end{lstlisting}
-
-\begin{opciones}
-\code{variables} & \code{[valor, sigma]} o \code{\{valor, sigma, distribucion, unidad, latex\}}.\\
-\code{constantes} & \code{\{"nombre": valor\}}.\\
-\code{correlaciones} & \code{[\{"a": "x", "b": "y", "rho": 0.3\}]}.\\
-\code{metodo} & \code{lineal}, \code{segundo\_orden}, \code{monte\_carlo}, \code{kragten} o \code{cota\_maxima}.\\
-\code{nivel} · \code{muestras} · \code{coma\_decimal} & Nivel de confianza, muestras de Monte Carlo, coma o punto.\\
-\end{opciones}
-
-\textbf{Respuesta:} \code{resultado} (p.\,ej. \code{"g = 9,80 ± 0,05 m/s\^{}2"}), \code{resultado\_latex}, \code{valor}, \code{sigma}, \code{error\_relativo\_pct}, \code{intervalo}, \code{funcion\_error} y \code{funcion\_error\_latex} ($\sigma_f$ simbólica), \code{formula\_latex}, \code{derivadas}, \code{metodos} (los cinco), \code{presupuesto} y \code{avisos}.
-
-\subsection{Ajuste: \texttt{ajustar}}
-
-\begin{lstlisting}
-{
-  "datos": { "x": [1, 2, 3, 4], "y": [2.1, 3.9, 6.2, 7.8], "sy": [0.2, 0.2, 0.2, 0.2] },
-  "modelo": "a*x + b", "parametros": { "a": 1, "b": 0 }
-}
-\end{lstlisting}
-
-\begin{opciones}
-Datos & \code{datos} en línea, \textbf{o} \code{archivo} (CSV o Excel, relativo al JSON) con rangos \code{x}, \code{y}, \code{sx}, \code{sy} (\code{"A2:A"}, \code{"Hoja1!B2:B"}).\\
-\code{modelo} · \code{variable} & Ecuación y variable independiente (\code{x} por defecto).\\
-\code{parametros} & \code{\{"a": 1\}} (valor inicial) o \code{\{"a": \{"inicial": 1, "min": 0, "max": 10, "fijo": false, "unidad": "m"\}\}}.\\
-\code{metodo} & \code{auto}, \code{lineal}, \code{levenberg\_marquardt}, \code{gauss\_newton}, \code{nelder\_mead}, \code{varianza\_efectiva} u \code{odr}.\\
-\code{incertidumbre} & \code{covarianza}, \code{bootstrap}, \code{monte\_carlo}, \code{jackknife} o \code{perfil}.\\
-\code{covarianza} & \code{escalada} (por defecto) o \code{absoluta}.\\
-\end{opciones}
-
-\textbf{Respuesta:} \code{parametros} (con \code{valor}, \code{sigma}, \code{intervalo} y \code{texto} redondeado), \code{estadisticos} (\code{chi2}, \code{chi2\_red}, \code{p\_valor}, \code{r2}, \code{r2\_ajustado}, \code{s\_residuos}, \code{aic}, \code{bic}, \code{gl}), \code{correlacion}, \code{residuos} y \code{avisos}.
-
-\subsection{Gráfico: \texttt{grafico}}
-
-\begin{lstlisting}
-fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos --dpi 300
-\end{lstlisting}
-
-\begin{opciones}
-\code{--formatos} & Cualquier combinación de \code{pdf}, \code{png}, \code{svg}, \code{tex} y \code{tikz}. Sin esta opción, se usan los formatos del proyecto.\\
-\code{--salida DIR} & Carpeta de salida (por defecto, junto al proyecto).\\
-\code{--dpi N} & Resolución del PNG.\\
-\end{opciones}
-
-El proyecto es el mismo \code{.fisgraf.json} que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal. \code{fisgraf-cli plantilla grafico} da un proyecto mínimo, y el formato completo está en \code{ia/claude/skills/fisgraf/referencia.md}.
-
-% ------------------------------------------------------------------ 5
-\section{Usarlo con una IA}\label{sec:ia}
-
-Una IA puede usar \code{fisgraf-cli} como herramienta: obtiene los mismos números que las aplicaciones y los gráficos con el mismo estilo LaTeX.
-
-\begin{opciones}
-Claude Code (terminal o pestaña \emph{Code}) & Plugin: \code{/plugin marketplace add malvarezdam/FisGraf-FisErr} y luego \code{/plugin install fisgraf@fisgraf-fiserr}. La primera vez descarga \code{fisgraf-cli.exe} en \code{\%USERPROFILE\%\bs .fisgraf}.\\
-Un solo proyecto de Claude Code & Descomprime \code{IA\_Claude.zip} (página de descargas) en la raíz del proyecto: queda \code{.claude\bs skills\bs fisgraf} con el \code{.exe} incluido.\\
-ChatGPT & Con \textbf{Codex}, el agente de OpenAI incluido en ChatGPT Plus, Pro, Business y Edu. Usa el instalador, o \code{IA\_ChatGPT-Codex.zip}, que trae \code{config.toml} para \code{\%USERPROFILE\%\bs .codex} y las instrucciones \code{AGENTS.md}.\\
-Gemini & Con \textbf{Gemini CLI}. Usa el instalador, o descomprime \code{IA\_Gemini.zip} e instala la carpeta \code{fisgraf} con \code{gemini extensions install}.\\
-Claude Desktop, Codex y Gemini CLI a la vez & Ejecuta \code{ia/instalar.ps1} (ver el README del repositorio). Descarga la herramienta y la registra en las apps que encuentre, guardando antes una copia \code{.bak} de cada configuración.\\
-Cursor, VS Code y otras & Servidor MCP: \code{IA\_fisgraf-cli.exe} con el argumento \code{mcp}.\\
-\end{opciones}
-
-Los chats web de ChatGPT y de Gemini no pueden ejecutar programas en tu computador; por eso se usan Codex y Gemini CLI. Al usar la herramienta, la IA menciona que los resultados se hicieron con FisGraf, de Martín Álvarez de Araya.
-
-Basta con pedir lo que necesitas, por ejemplo:
-
-\begin{itemize}
-  \item «Calcula el error de $g = 4\pi^2L/T^2$ con $L = 1{,}000 \pm 0{,}001$\,m y $T = 2{,}007 \pm 0{,}005$\,s».
-  \item «Ajusta los datos de \code{mediciones.xlsx} (columnas A y B, errores en C) a una exponencial y dame $\tau$ con su error».
-  \item «Haz un gráfico con barras de error, la recta ajustada y $R^2$ de estos datos: …».
-  \item «¿Qué medición domina el error de la densidad?».
-\end{itemize}
-
-La IA usará la herramienta, informará los resultados redondeados según la GUM (con $\chi^2_{\text{red}}$ y $R^2$ cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el \code{.fisgraf.json} que haya creado. Para desactivarlo: \code{/plugin uninstall fisgraf}, borra la carpeta de la skill o quita \code{fisgraf} de la configuración MCP.
-\fi\fi
 
 % ------------------------------------------------------------------ 6
 \section{Referencia rápida}
@@ -708,7 +607,7 @@ Windows avisa «Windows protegió su PC» & El \code{.exe} no está firmado digi
 % ------------------------------------------------------------------ 8
 \section{Autor, licencia y cómo citar}\label{sec:licencia}
 
-FisGraf, FisErr y fisgraf-cli son obra de \textbf{Martín Álvarez de Araya} (© 2026, todos los derechos reservados).
+FisGraf y FisErr son obra de \textbf{Martín Álvarez de Araya} (© 2026, todos los derechos reservados).
 
 \begin{itemize}
   \item \textbf{Uso gratuito} para cualquier fin (personal, académico, docente, de investigación o profesional): nadie debe pagar por usarlo.

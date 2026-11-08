@@ -1,11 +1,10 @@
 # FisGraf y FisErr. Copyright (c) 2026 Martín Álvarez de Araya. Todos los derechos reservados (ver LICENSE).
 #
-# Workspace con tres partes que comparten la lógica numérica de `graficos/`:
+# Workspace con dos partes que comparten la lógica numérica de `graficos/`:
 #   graficos/         FisGraf: gráficos de datos con ajustes y LaTeX, y la biblioteca `fisgraf`.
 #   errores/          FisErr: calculadora de propagación de errores.
-#   ia/fisgraf-cli/   Herramienta para IA: comandos JSON y servidor MCP.
 [workspace]
-members = ["graficos", "errores", "ia/fisgraf-cli"]
+members = ["graficos", "errores"]
 resolver = "3"
 
 [workspace.package]

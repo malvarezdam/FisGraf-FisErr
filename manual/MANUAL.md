@@ -1,25 +1,22 @@
 # Manual de uso
 
-**FisGraf y FisErr © 2026 Martín Álvarez de Araya.** Uso gratuito citando siempre al autor (sección 8).
+**FisGraf y FisErr © 2026 Martín Álvarez de Araya.** Uso gratuito citando siempre al autor (sección 6).
 
-Este manual explica cómo usar las tres herramientas del proyecto:
+Este manual explica cómo usar los dos programas del proyecto:
 
 | | Programa | Para qué |
 |---|---|---|
 | <img src="../graficos/assets/logo.png" width="40"> | **FisGraf** | Gráficos de datos con ajustes, errores y tipografía LaTeX. |
 | <img src="../errores/assets/logo.png" width="40"> | **FisErr** | Calculadora de propagación de errores. |
-| ⌨ | **fisgraf-cli** | Las mismas funciones por línea de comandos y como servidor MCP, para que la use una IA. |
 
 **Contenido**
 
 1. [Antes de empezar](#1-antes-de-empezar)
 2. [FisGraf](#2-fisgraf)
 3. [FisErr](#3-fiserr)
-4. [fisgraf-cli](#4-fisgraf-cli)
-5. [Usarlo con una IA](#5-usarlo-con-una-ia)
-6. [Referencia rápida](#6-referencia-rápida)
-7. [Problemas frecuentes](#7-problemas-frecuentes)
-8. [Autor, licencia y cómo citar](#8-autor-licencia-y-cómo-citar)
+4. [Referencia rápida](#4-referencia-rápida)
+5. [Problemas frecuentes](#5-problemas-frecuentes)
+6. [Autor, licencia y cómo citar](#6-autor-licencia-y-cómo-citar)
 
 ---
 
@@ -29,7 +26,7 @@ Este manual explica cómo usar las tres herramientas del proyecto:
 
 | Programa | Necesario para |
 |---|---|
-| **MiKTeX** (o TeX Live) | Vista LaTeX y exportación de gráficos en FisGraf, y el comando `grafico` de `fisgraf-cli`. FisErr no lo necesita. |
+| **MiKTeX** (o TeX Live) | Vista LaTeX y exportación de gráficos en FisGraf. FisErr no lo necesita. |
 | **Rust** | Solo para compilar los programas (crear o actualizar los `.exe`). |
 
 ### Abrir los programas
@@ -366,114 +363,9 @@ Los cálculos se guardan como `.fiserr.json`, que puede contener varios. Si hay 
 
 ---
 
-## 4. fisgraf-cli
+## 4. Referencia rápida
 
-Programa de línea de comandos con las mismas funciones, pensado para scripts y para que una IA lo use como herramienta. Recibe y devuelve **JSON**.
-
-**Dónde conseguirlo:** `IA_fisgraf-cli.exe` está en la página de descargas del repositorio. También puedes compilarlo con `cargo build --release -p fisgraf-cli` (queda en `target\release\`). Con `fisgraf-cli mcp` funciona como servidor MCP (sección 5).
-
-| Comando | Qué hace |
-|---|---|
-| `fisgraf-cli errores entrada.json` | Propagación de errores. |
-| `fisgraf-cli ajustar entrada.json` | Ajuste de un modelo a datos. |
-| `fisgraf-cli grafico proyecto.fisgraf.json` | Genera el gráfico e informa los ajustes. |
-| `fisgraf-cli plantilla errores` (o `ajustar`, `grafico`) | Imprime un JSON de ejemplo listo para editar. |
-| `fisgraf-cli ayuda` | Ayuda resumida. |
-
-En lugar de un archivo se puede pasar `-` para leer el JSON de la entrada estándar. Si algo falla, la respuesta es `{"error": "…"}` con un mensaje en español.
-
-### 4.1 `errores`
-
-```json
-{
-  "nombre": "g", "unidad": "m/s^2",
-  "ecuacion": "4*pi^2*L/T^2",
-  "variables": { "L": { "valor": 1.0, "sigma": 0.0003, "distribucion": "uniforme" }, "T": [2.007, 0.005] },
-  "constantes": {},
-  "metodo": "lineal"
-}
-```
-
-| Campo | Valores |
-|---|---|
-| `variables` | `[valor, sigma]` o `{valor, sigma, distribucion, unidad, latex}` |
-| `constantes` | `{"nombre": valor}` |
-| `correlaciones` | `[{"a": "x", "b": "y", "rho": 0.3}]` |
-| `metodo` | `lineal`, `segundo_orden`, `monte_carlo`, `kragten`, `cota_maxima` |
-| `nivel`, `muestras`, `coma_decimal` | Nivel de confianza, muestras de Monte Carlo, coma o punto |
-
-**Respuesta:**
-- `resultado` (`"g = 9,80 ± 0,05 m/s^2"`), `resultado_latex`, `valor`, `sigma`, `error_relativo_pct`, `intervalo`;
-- `funcion_error` y `funcion_error_latex` (σ_f simbólica), `formula_latex`, `derivadas`;
-- `metodos` (los 5), `presupuesto` y `avisos`.
-
-### 4.2 `ajustar`
-
-```json
-{
-  "datos": { "x": [1, 2, 3, 4], "y": [2.1, 3.9, 6.2, 7.8], "sy": [0.2, 0.2, 0.2, 0.2] },
-  "modelo": "a*x + b", "parametros": { "a": 1, "b": 0 }
-}
-```
-
-| Campo | Valores |
-|---|---|
-| Datos | `datos` en línea, **o** `archivo` (CSV o Excel, relativo al JSON) con rangos `x`, `y`, `sx`, `sy` (`"A2:A"`, `"Hoja1!B2:B"`) |
-| `modelo`, `variable` | Ecuación y variable independiente (`x` por defecto) |
-| `parametros` | `{"a": 1}` (valor inicial) o `{"a": {"inicial": 1, "min": 0, "max": 10, "fijo": false, "unidad": "m"}}` |
-| `metodo` | `auto`, `lineal`, `levenberg_marquardt`, `gauss_newton`, `nelder_mead`, `varianza_efectiva`, `odr` |
-| `incertidumbre` | `covarianza`, `bootstrap`, `monte_carlo`, `jackknife`, `perfil` |
-| `covarianza` | `escalada` (por defecto) o `absoluta` |
-| `nivel`, `usar_pesos`, `coma_decimal` | |
-
-**Respuesta:** `parametros` (con `valor`, `sigma`, `intervalo` y `texto` redondeado), `estadisticos` (`chi2`, `chi2_red`, `p_valor`, `r2`, `r2_ajustado`, `s_residuos`, `aic`, `bic`, `gl`), `correlacion`, `residuos` y `avisos`.
-
-### 4.3 `grafico`
-
-```bash
-fisgraf-cli grafico proyecto.fisgraf.json --formatos pdf,png --salida graficos_finales --dpi 300
-```
-
-| Opción | Qué hace |
-|---|---|
-| `--formatos` | Cualquier combinación de `pdf`, `png`, `svg`, `tex`, `tikz` (si no se da, se usan los del proyecto). |
-| `--salida DIR` | Carpeta de salida (si no, junto al proyecto). |
-| `--dpi N` | Resolución del PNG. |
-
-El proyecto es el mismo `.fisgraf.json` que guarda FisGraf: puedes crearlo en la aplicación y generarlo desde la terminal, o escribirlo a mano. `fisgraf-cli plantilla grafico` da un proyecto mínimo, y el formato completo está en `ia/claude/skills/fisgraf/referencia.md`.
-
----
-
-## 5. Usarlo con una IA
-
-Una IA puede usar `fisgraf-cli` como herramienta: obtiene los mismos números que las aplicaciones, redondeados según la GUM, y los gráficos con el mismo estilo LaTeX. Basta con pedir lo que necesitas, por ejemplo:
-
-- «Calcula el error de g = 4π²L/T² con L = 1,000 ± 0,001 m y T = 2,007 ± 0,005 s».
-- «Ajusta los datos de `mediciones.xlsx` (columnas A y B, errores en C) a una exponencial y dame τ con su error».
-- «Haz un gráfico con barras de error, la recta ajustada y R² de estos datos: …».
-- «¿Qué medición domina el error de la densidad?».
-
-La IA informará los resultados (con χ²_red y R² cuando corresponda) y te entregará los archivos del gráfico. Para retocar un gráfico, abre con FisGraf el `.fisgraf.json` que haya creado.
-
-| Dónde | Cómo se instala |
-|---|---|
-| **Todas: Claude Desktop, Codex y Gemini CLI** | En PowerShell: `irm https://raw.githubusercontent.com/malvarezdam/FisGraf-FisErr/main/ia/instalar.ps1 \| iex`. El instalador:<br>• descarga la herramienta en `%USERPROFILE%\.fisgraf\`;<br>• la registra en las apps que encuentre instaladas;<br>• guarda antes una copia `.bak` de cada configuración.<br>Reinicia la app después. |
-| **Claude Code** (terminal o pestaña *Code*) | Plugin: `/plugin marketplace add malvarezdam/FisGraf-FisErr` y después `/plugin install fisgraf@fisgraf-fiserr`. La primera vez descarga `fisgraf-cli.exe` en `%USERPROFILE%\.fisgraf\`. |
-| **Un solo proyecto de Claude Code** | Descomprime `IA_Claude.zip` (de la página de descargas) en la raíz del proyecto: queda `.claude\skills\fisgraf\` con el `.exe` incluido. |
-| **ChatGPT** | Con **Codex**, el agente de OpenAI incluido en ChatGPT Plus, Pro, Business y Edu. Usa el instalador, o `IA_ChatGPT-Codex.zip`: trae `config.toml` para `%USERPROFILE%\.codex\` y `AGENTS.md` con las instrucciones. El chat web de ChatGPT no puede ejecutar programas en tu computador. |
-| **Gemini** | Con **Gemini CLI**. Usa el instalador, o descomprime `IA_Gemini.zip` y ejecuta `gemini extensions install <carpeta fisgraf>`. El chat web de Gemini no puede ejecutar programas en tu computador. |
-| **Cursor, VS Code y otras** | Servidor MCP: `IA_fisgraf-cli.exe` con el argumento `mcp`. |
-
-Al usar la herramienta, la IA menciona que los resultados se hicieron con FisGraf, de Martín Álvarez de Araya. Cítalo también en tus informes (sección 8).
-
-
-Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills\fisgraf\` del proyecto, o quita la entrada `fisgraf` de la configuración MCP.
-
----
-
-## 6. Referencia rápida
-
-### 6.1 Cómo escribir ecuaciones
+### 4.1 Cómo escribir ecuaciones
 
 | Elemento | Cómo se escribe |
 |---|---|
@@ -485,7 +377,7 @@ Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills
 | Potencias | `-x^2` es −(x²); `2^3^2` = 2⁹ |
 | Nombres | `omega` → ω, `T0` → T₀, `T_teo` → T_teo (se convierten solos a LaTeX) |
 
-### 6.2 Qué método elegir
+### 4.2 Qué método elegir
 
 **Ajuste**
 
@@ -517,7 +409,7 @@ Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills
 | Kragten | Quieres el equivalente numérico del lineal (EURACHEM). |
 | Cota máxima | Te piden el «error máximo»; es una cota, no una σ. |
 
-### 6.3 Cómo leer los resultados
+### 4.3 Cómo leer los resultados
 
 | Indicador | Interpretación |
 |---|---|
@@ -533,7 +425,7 @@ Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills
 
 ---
 
-## 7. Problemas frecuentes
+## 5. Problemas frecuentes
 
 | Problema | Solución |
 |---|---|
@@ -548,9 +440,9 @@ Para desactivarlo: `/plugin uninstall fisgraf`, borra la carpeta `.claude\skills
 
 ---
 
-## 8. Autor, licencia y cómo citar
+## 6. Autor, licencia y cómo citar
 
-FisGraf, FisErr y fisgraf-cli son obra de **Martín Álvarez de Araya** (© 2026, todos los derechos reservados).
+FisGraf y FisErr son obra de **Martín Álvarez de Araya** (© 2026, todos los derechos reservados).
 
 - **Uso gratuito** para cualquier fin (personal, académico, docente, de investigación o profesional): nadie debe pagar por usarlo.
 - **Cita obligatoria:** todo uso, y todo informe, artículo, tesis o presentación con resultados o gráficos hechos con él, debe citar al autor:
