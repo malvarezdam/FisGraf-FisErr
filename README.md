@@ -21,7 +21,7 @@ Todo está en la **[versión 1.0 (Releases)](https://github.com/malvarezdam/FisG
 |---|---|---|
 | **Gráficos** | **[Graficos_FisGraf-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/Graficos_FisGraf-portable.zip)** | FisGraf con su manual, proyectos de ejemplo y 8 experimentos de prueba. |
 | **Errores** | **[Errores_FisErr-portable.zip](https://github.com/malvarezdam/FisGraf-FisErr/releases/latest/download/Errores_FisErr-portable.zip)** | FisErr con su manual. |
-| **Skill de IA** | **[IA_fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/download/v1.0.0/IA_fisgraf-cli.exe)** | Programa que necesita la skill de FisGraf para agentes de IA ([más información](#skill-para-agentes-de-ia)). Si solo usas las aplicaciones, no lo necesitas. |
+| **Skill de IA** | **[IA_fisgraf-cli.exe](https://github.com/malvarezdam/FisGraf-FisErr/releases/download/v1.0.0/IA_fisgraf-cli.exe)** | Programa que necesita la [skill de FisGraf en Agensi](https://www.agensi.io/skills/fisgraf-physics-error-propagation-fits-latex-plots) ([más información](#skill-para-agentes-de-ia)). Si solo usas las aplicaciones, no lo necesitas. |
 
 - FisGraf necesita [MiKTeX](https://miktex.org) (o TeX Live) solo para la vista LaTeX y para exportar los gráficos. FisErr no lo necesita.
 - Si Windows muestra «Windows protegió su PC», pulsa *Más información → Ejecutar de todas formas* (los `.exe` no están firmados).
@@ -157,7 +157,7 @@ Todo texto del gráfico se escribe en **LaTeX**: lo que no va entre `$…$` es t
 
 ## Skill para agentes de IA
 
-La skill de FisGraf permite que un agente de IA propague errores, ajuste modelos y genere gráficos con esta misma lógica. Se vende en [Agensi](https://www.agensi.io). Agensi no admite ejecutables, así que el programa que usa se descarga aquí, gratis:
+La skill de FisGraf permite que un agente de IA propague errores, ajuste modelos y genere gráficos con esta misma lógica. Está a la venta en **[Agensi](https://www.agensi.io/skills/fisgraf-physics-error-propagation-fits-latex-plots)**. Agensi no admite ejecutables, así que el programa que usa se descarga aquí, gratis:
 
 - **Archivo:** `IA_fisgraf-cli.exe` (Windows 10 u 11, 3 MB)
 - **Página de descarga:** [versión 1.0, sección *Assets*](https://github.com/malvarezdam/FisGraf-FisErr/releases/tag/v1.0.0)
