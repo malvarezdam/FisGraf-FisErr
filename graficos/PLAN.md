@@ -410,3 +410,8 @@ Copia el mensaje de la fase en un chat nuevo abierto **en esta carpeta**. `CLAUD
 - [x] **Skill publicada en Agensi** (pedido del usuario, 2026-11-09)
   - Enlace de venta en el README y en las notas de la Release: https://www.agensi.io/skills/fisgraf-physics-error-propagation-fits-latex-plots
   - La versión sigue siendo 1.0.0.
+- [x] **Cierre de la versión 1.0** (pedido del usuario, 2026-11-10)
+  - Manuales recompilados: los PDF eran anteriores a la retirada de la parte de IA.
+  - `crear_distribucion.bat` ya no llama a `ia\crear_paquetes.bat`, que no existe; `manual/compilar.bat` ya no menciona el manual completo.
+  - Zips portables regenerados y subidos a la Release v1.0.0, que ahora apunta a este commit. `IA_fisgraf-cli.exe` no cambió (la skill comprueba su SHA-256).
+  - GitHub: descripción, temas y web del repositorio; wiki y proyectos desactivados.

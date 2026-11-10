@@ -16,7 +16,7 @@ for %%M in (manual_fiserr manual_portable) do (
 copy /y manual_portable.pdf "..\graficos\Manual_FisGraf.pdf" >nul
 copy /y manual_fiserr.pdf "..\errores\Manual_FisErr.pdf" >nul
 del /q *.aux *.log *.toc *.out 2>nul
-echo Listo: manual\Manual_completo.pdf, graficos\Manual_FisGraf.pdf y errores\Manual_FisErr.pdf
+echo Listo: graficos\Manual_FisGraf.pdf y errores\Manual_FisErr.pdf
 if /i not "%~1"=="sinpausa" pause
 exit /b 0
 

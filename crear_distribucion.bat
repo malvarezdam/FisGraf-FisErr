@@ -17,8 +17,6 @@ call "%~dp0graficos\crear_portable.bat" sinpausa
 if errorlevel 1 goto fallo
 call "%~dp0errores\crear_portable.bat" sinpausa
 if errorlevel 1 goto fallo
-call "%~dp0ia\crear_paquetes.bat" sinpausa
-if errorlevel 1 goto fallo
 echo.
 echo Listo: dist\
 dir /b "%~dp0dist"
